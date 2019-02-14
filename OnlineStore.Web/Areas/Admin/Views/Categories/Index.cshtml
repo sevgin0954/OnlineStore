@@ -1,0 +1,55 @@
+﻿@model IList<CategoryViewModel>
+@{
+    Layout = "/Views/Shared/_LayoutAdminPanel.cshtml";
+    ViewData["Title"] = "Categories";
+}
+
+<div class="d-flex">
+    <h3 class="col">Products</h3>
+    <a asp-controller="Categories" asp-action="CreateCategory" class="btn btn-custom-border-blue col">Add new category</a>
+</div>
+<div class="account-content-inner">
+    <table class="table table-custom-row-blue">
+        <thead>
+            <tr>
+                <th scope="col">Id</th>
+                <th scope="col">Name</th>
+                <th scope="col">Products count</th>
+                <th scope="col"></th>
+            </tr>
+        </thead>
+        <tbody>
+        @foreach (var categoryModel in Model)
+        {
+            <tr>
+                <td>@categoryModel.CategoryId</td>
+                <td>@categoryModel.Name</td>
+                <td>@categoryModel.TotalProductsCount</td>
+                <td>
+                    <a asp-action="AddSubcategory" asp-route-categoryId="@categoryModel.CategoryId" class="btn btn-custom-border-blue">Add subcategory</a>
+                </td>
+            </tr>
+            @foreach (var subCategory in categoryModel.SubCategories)
+            {
+                <tr class="table-light">
+                    <td>
+                        @subCategory.Id
+                    </td>
+                    <td>
+                        @subCategory.Name
+                    </td>
+                    <td>
+                        @subCategory.Products.Count
+                    </td>
+                    <td>
+                        <div class="d-flex">
+                            <a asp-controller="Products" asp-action="Add" asp-route-subcategoryId="@subCategory.Id" class="btn btn-custom-border-blue">Add product</a>
+                            <a asp-controller="Products" asp-action="ViewProducts" asp-route-subcategoryId="@subCategory.Id" class="btn btn-custom-border-blue">View products>></a>
+                        </div>
+                    </td>
+                </tr>
+            }
+        }
+        </tbody>
+    </table>
+</div>

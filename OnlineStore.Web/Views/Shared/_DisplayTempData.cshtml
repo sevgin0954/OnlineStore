@@ -1,0 +1,12 @@
+﻿@if (TempData.Keys.Any(k => k.StartsWith(ControllerConstats.StatusMessagePrefix)))
+{
+    foreach (var key in TempData.Keys.Where(v => v.ToString().StartsWith(ControllerConstats.StatusMessagePrefix)))
+    {
+        <div class="alert alert-@(TempData[ControllerConstats.StatusMessageType]) alert-dismissible fade show" role="alert">
+            @TempData[key]
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+            </button>
+        </div>
+    }
+}

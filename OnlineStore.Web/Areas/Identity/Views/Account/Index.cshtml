@@ -1,0 +1,104 @@
+﻿@model OnlineStore.Models.WebModels.Account.ViewModels.IndexViewModel
+@{
+    ViewData["Title"] = "Account";
+    Layout = "/Views/Shared/_LayoutAccount.cshtml";
+}
+
+<h3>@ViewData["Title"]</h3>
+<div class="account-content-inner row">
+    <div class="profile-image-menu col-6 col-md-4 col-lg-3 col-xl-2">
+        <div class="image-holder">
+            @{
+                if (Model.ProfileImageAsByte != null)
+                {
+                    <img class="profile-image" src="data:image/jpg;base64,@System.Convert.ToBase64String(Model.ProfileImageAsByte)" />
+                }
+                else
+                {
+                    <img alt="no profile picture" />
+                }
+            }
+        </div>
+        <form asp-area="Identity" asp-controller="Account" asp-action="UpdateProfilePicture" method="post" enctype="multipart/form-data">
+            <input name="image" id="hiddenbtn" hidden="hidden" type="file" accept="image/*" />
+            <button id="realbtn" class="btn btn-custom-border-blue image-holder-button" type="button">update</button>
+            <button id="submitbtn" hidden="hidden" type="submit"></button>
+        </form>
+    </div>
+
+    <div class="account-info col-6 col-md-8 col-lg-9 col-xl-10">
+        <div class="account-info-inner">
+            Full Name:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+            @Model.FullName <br />
+        </div>
+        <div class="account-info-inner">
+            Phone Number:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+            @if (@Model.PhoneNumber == null)
+            {
+                @:Not set
+            }
+            else
+            {
+                @Model.PhoneNumber
+            }
+        </div>
+    </div>
+    <a asp-controller="Account" asp-action="Edit" class="mx-md-auto mr-md-auto btn btn-custom-border-blue">Edit Information</a>
+</div>
+<h3>Addresses for delivery</h3>
+
+<div class="account-content-inner">
+    <ul class="list-group list-group-flush">
+        @if (Model.DeliveryInfos.Count == 0)
+        {
+            <li class="list-group-item text-center">
+                <a asp-controller="DeliveryInfo" asp-action="Add" class="btn btn-custom-border-blue">add first address</a>
+            </li>
+        }
+        else
+        {
+            foreach (var deliveryinfo in Model.DeliveryInfos)
+            {
+                <li class="list-group-item">
+                    <div class="d-flex">
+                        <div>
+                            <b>@deliveryinfo.FullName - @deliveryinfo.PhoneNumber</b> <br />
+                            @deliveryinfo.Address <br />
+                            @deliveryinfo.SelectedDistrictName - @deliveryinfo.SelectedPopulatedName
+                        </div>
+
+                        <div class="ml-auto row">
+                            <form class="form-group" asp-controller="DeliveryInfo" asp-action="Delete" method="post" asp-route-id="@deliveryinfo.Id">
+                                <a asp-controller="DeliveryInfo" asp-action="Edit" asp-route-id="@deliveryinfo.Id" class="btn btn-custom btn-custom-border-blue">edit</a>
+                                <button type="submit" class="btn btn-custom-border-red">Delete</button>
+                            </form>
+                        </div>
+                    </div>
+                </li>
+            }
+
+            <li class="list-group-item">
+                <a asp-controller="DeliveryInfo" asp-action="Add" class="btn btn-custom-border-blue">add new address</a>
+            </li>
+        }
+    </ul>
+
+</div>
+
+@*image scripts*@
+<script>
+    $(document).ready(function () {
+        let hiddenbtn = $("#hiddenbtn");
+        let realbtn = $("#realbtn");
+        let submitbtn = $("#submitbtn");
+
+        realbtn.on("click", function () {
+            hiddenbtn.click();
+
+            hiddenbtn.on("change", function () {
+                submitbtn.click();
+            });
+        })
+    })
+</script>
+

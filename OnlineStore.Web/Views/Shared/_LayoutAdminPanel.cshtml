@@ -1,0 +1,56 @@
+﻿@{
+    Layout = "/Views/Shared/_Layout.cshtml";
+}
+<div class="account-container d-flex">
+    <div class="account-menu">
+        <ul class="list-group list-group-flush">
+            <li class="list-group-item">
+                <a asp-area="Admin" asp-controller="Admin" asp-action="Index">Statistics</a>
+            </li>
+            <li class="list-group-item">
+                <a asp-area="Admin" asp-controller="Users" asp-action="Index">Users</a>
+            </li>
+            <li class="list-group-item">
+                <a href="#">Orders</a>
+            </li>
+            <li class="list-group-item">
+                <a asp-area="Admin" asp-controller="Categories" asp-action="Index">Categories and products</a>
+            </li>
+        </ul>
+    </div>
+
+    <div class="account-content">
+        @RenderBody()
+    </div>
+</div>
+
+<script>
+    $(function () {
+        let liTags = $("ul.list-group li.list-group-item");
+        let urlParts = document.URL.split("/").slice(-2);
+
+        let url = '/';
+
+        for (let a = 0; a < urlParts.length - 1; a++) {
+            url += urlParts[a] + "/";
+        }
+
+        url += urlParts[urlParts.length - 1];
+
+        for (let a = 0; a < liTags.length; a++) {
+            let hrefValue = $(liTags[a].children).attr("href");
+
+            if (hrefValue === url) {
+                $(liTags[a]).addClass("account-menu-selected");
+            }
+        }
+    })
+</script>
+
+<script src="~/js/highlightSelectedBtn.js"></script>
+
+<script>
+    $(".list-group-item").on("click", function () {
+        $(this).children()[0].click();
+    })
+</script>

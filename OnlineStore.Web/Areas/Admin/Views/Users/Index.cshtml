@@ -1,0 +1,48 @@
+﻿@model IList<UsersViewModel>
+@{
+    Layout = "/Views/Shared/_LayoutAdminPanel.cshtml";
+    ViewData["Title"] = "Users";
+}
+
+<h3>Users</h3>
+<div class="account-content-inner">
+    <table class="table">
+        <thead>
+            <tr>
+                <th scope="col">Id</th>
+                <th scope="col">Username</th>
+                <th scope="col">FullName</th>
+                <th scope="col">Email</th>
+                <th scope="col">OrdersCount</th>
+                <th scope="col"></th>
+            </tr>
+        </thead>
+        <tbody>
+            @for (int rowCount = 0; rowCount < Model.Count(); rowCount++)
+            {
+            <tr class="@(rowCount % 2 == 0 ? "table-custom-row-blue" : "")">
+                <td>@Model[rowCount].Id</td>
+                <td>@Model[rowCount].Username</td>
+                <td>@Model[rowCount].FullName</td>
+                <td>@Model[rowCount].Email</td>
+                <td>@Model[rowCount].OrdersCount</td>
+                <td>
+                    <form asp-action="ChangeState" asp-route-userId="@Model[rowCount].Id" method="post">
+                        @if (Model[rowCount].IsBanned)
+                        {
+                            <button class="btn btn-custom-border-blue" type="submit">Unban</button>
+                        }
+                        else
+                        {
+                            <button class="btn btn-custom-border-red" type="submit">Ban</button>
+                        }
+                    </form>
+                    <form asp-action="Delete" asp-route-userId="@Model[rowCount].Id" method="post">
+                        <button class="btn btn-custom-border-red" type="submit">Delete</button>
+                    </form>
+                </td>
+            </tr>
+            }
+        </tbody>
+    </table>
+</div>

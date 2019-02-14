@@ -1,0 +1,22 @@
+﻿@model IndexViewModel
+@{
+    Layout = "/Views/Shared/_LayoutAdminPanel.cshtml";
+    ViewData["Title"] = "Statistics";
+}
+
+<h3>Users</h3>
+<div class="account-content-inner">
+    Total users: @Model.UserCount <br />
+    New users today: @Model.NewUsersCount
+</div>
+
+<h3>Orders</h3>
+<div class="account-content-inner">
+    Total orders: @Model.OrdersCount <br />
+    New orders today: @Model.NewOrdersCount
+</div>
+
+<h3>Products</h3>
+<div class="account-content-inner"> <br />
+    Total products: @Model.ProductsCount
+</div>

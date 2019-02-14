@@ -1,0 +1,57 @@
+@using Microsoft.AspNetCore.Identity
+@inject SignInManager<User> SignInManager
+@inject UserManager<User> UserManager
+
+<a class="navbar-brand" href="/">
+    <img src="https://s12emagst.akamaized.net/layout/bg/images/logo//12/17641.png" alt="OnlineStore">
+</a>
+<button class="navbar-toggler" data-toggle="collapse" data-target="#navbarMenu">
+    <span class="navbar-toggler-icon"></span>
+</button>
+<form class="form-inline mx-auto">
+    <div class="input-group">
+        <input class="input-custom form-control" type="search" placeholder="Search" />
+        <div class="input-group-append">
+            <button class="btn btn-custom" type="submit"><i class="fa fa-search"></i></button>
+        </div>
+    </div>
+</form>
+
+@if (SignInManager.IsSignedIn(User))
+{
+    <div class="collapse navbar-collapse" id="navbarMenu">
+        <ul class="navbar-nav ml-auto">
+            @if (User.IsInRole(WebConstants.AdminRole))
+            {
+                <li class="nav-item dropdown">
+                    <a class="nav-link" href="/Admin/Admin">Admin Panel</a>
+                </li>
+            }
+            <li class="nav-item dropdown">
+                <a class="nav-link" href="/Identity/Account">My Account</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="#">Favorites</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="#">My Shopping Card</a>
+            </li>
+            <li class="nav-item">
+                <form class="form-inline" asp-area="Identity" asp-page="/Account/Logout" asp-route-returnUrl="@Url.Action("Index", "Home", new { area = "" })">
+                    <button type="submit" class="nav-link btn btn-link">Logout</button>
+                </form>
+            </li>
+        </ul>
+    </div>
+}
+else
+{
+    <ul class="navbar-nav ml-auto">
+        <li class="nav-item">
+            <a class="nav-link" asp-area="Identity" asp-page="/Account/Register">Register</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" asp-area="Identity" asp-page="/Account/Login">Login</a>
+        </li>
+    </ul>
+}

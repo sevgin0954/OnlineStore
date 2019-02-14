@@ -1,0 +1,25 @@
+﻿@model PersonInfoBindingModel
+@{
+    ViewData["Title"] = "Edit";
+}
+
+<h5>Person info</h5>
+<form asp-controller="Account" asp-action="Edit" method="post">
+    <div class="row row-custom-form">
+        <div class="col">
+            <label asp-for="FullName"></label>
+            <input class="form-control" asp-for="FullName" />
+        </div>
+        <div class="col">
+            <label asp-for="PhoneNumber"></label>
+            <input class="form-control" asp-for="PhoneNumber" />
+        </div>
+    </div>
+    <div class="row row-custom-form">
+        <div class="mx-auto">
+            <button class="btn btn-custom-border-blue" type="submit">Submit</button>
+            <a asp-controller="Account" asp-action="Index" class="btn btn-custom-border-red">Cancel</a>
+        </div>
+    </div>
+</form>
+

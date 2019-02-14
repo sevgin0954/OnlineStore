@@ -1,0 +1,43 @@
+﻿@model DeliveryInfoBindingModel
+@{
+    ViewData["Title"] = "Add new delivery info";
+}
+
+<div>
+    <form id="deliveryinfoform" class="form-group" method="post">
+        <h5>Person info</h5>
+        <div class="row row-custom-form">
+            <div class="col">
+                <label asp-for="FullName"></label>
+                <input class="form-control" asp-for="FullName" />
+            </div>
+            <div class="col">
+                <label asp-for="PhoneNumber"></label>
+                <input class="form-control" asp-for="PhoneNumber" />
+            </div>
+        </div>
+        <h5>Address info</h5>
+        <div class="row row-custom-form">
+            <div class="col">
+                <label asp-for="AllDistricts"></label>
+                <select id="districtSelect" class="form-control" asp-for="SelectedDistrictId" asp-items="Model.AllDistricts"></select>
+            </div>
+
+            <div class="col">
+                <label asp-for="AllPopulatedPlaces"></label>
+                <select id="populatedPlacesSelect" class="form-control" asp-for="SelectedPopulatedPlaceId" asp-items="Model.AllPopulatedPlaces" disabled></select>
+            </div>
+        </div>
+        <div class="row row-custom-form">
+            <div class="col">
+                <label asp-for="Address"></label>
+                <input class="form-control" asp-for="Address" />
+            </div>
+        </div>
+
+        <button class="btn btn-custom-border-blue" type="submit">submit</button>
+        <a asp-controller="Account" asp-action="Index" class="btn btn-custom btn-custom-border-red">cancel</a>
+    </form>
+</div>
+
+<script src="~/js/filterFormPopulatedCitys.js"></script>

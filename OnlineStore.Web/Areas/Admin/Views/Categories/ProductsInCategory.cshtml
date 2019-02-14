@@ -1,0 +1,36 @@
+﻿IList<ProductsViewModel>
+@{
+    ViewData["Title"] = "ProductsInCategory";
+}
+
+<div class="account-content-inner">
+    <table class="table">
+        <thead>
+            <tr>
+                <th scope="col">Id</th>
+                <th scope="col">Name</th>
+                <th scope="col">Price</th>
+                <th scope="col">CountsLeft</th>
+                <th scope="col"></th>
+            </tr>
+        </thead>
+        <tbody>
+            @for (int rowCount = 0; rowCount < Model.Count(); rowCount++)
+            {
+                <tr class="@(rowCount % 2 == 0 ? "table-custom-row-blue" : "")">
+                    <td>@Model[rowCount].Id</td>
+                    <td>@Model[rowCount].Name</td>
+                    <td>@Model[rowCount].Price</td>
+                    <td>@Model[rowCount].CountsLeft</td>
+                    <td>
+                            
+                        <form asp-action="Delete" asp-route-userId="@Model[rowCount].Id" method="post">
+                            <button class="btn btn-custom-border-red" type="submit">Delete</button>
+                        </form>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
+

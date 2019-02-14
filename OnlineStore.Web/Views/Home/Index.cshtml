@@ -1,0 +1,57 @@
+﻿@model IndexViewModel
+@{
+    ViewData["Title"] = "Home Page";
+}
+
+<div class="intro-row-container">
+    <div class="categories-container">
+        <ul class="categories-custom-ul">
+            @foreach (var category in Model.Categories)
+            {
+                <li >
+                    <a data-id="@category.Id">@category.Name</a>
+                </li>
+            }
+        </ul>
+    </div>
+    <div class="subcategories-container">
+        @foreach (var category in Model.Categories)
+        {
+            <ul class="subcategories-custom-ul" data-id="@category.Id" hidden >
+                @foreach (var subcategory in category.SubCategories)
+                {
+                    <li>
+                        <a asp-controller="Products" asp-action="Products" asp-route-subcategoryId="@subcategory.Id">@subcategory.Name</a>
+                    </li>
+                }
+            </ul>
+        }
+    </div>
+</div>
+
+<script>
+    $(function () {
+        $(".categories-custom-ul li").on("mouseover", function (e) {
+            var selectedId = e.target.getAttribute("data-id");
+
+            var elementToShow = $(`.subcategories-custom-ul[data-id="${selectedId}"]`);
+
+            var allSubCategories = $(".subcategories-custom-ul");
+
+            hideElements(allSubCategories);
+            showElement(elementToShow);
+
+            $(".intro-row-container").on("mouseleave", function () {
+                hideElements(allSubCategories);
+            });
+        });
+
+        function showElement(element) {
+            $(element).removeAttr("hidden")
+        }
+
+        function hideElements(elements) {
+            $(elements).attr("hidden", "hidden")
+        }
+    })
+</script>

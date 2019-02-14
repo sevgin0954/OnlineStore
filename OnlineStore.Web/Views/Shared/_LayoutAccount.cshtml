@@ -1,0 +1,43 @@
+﻿@{
+    Layout = "/Views/Shared/_Layout.cshtml";
+}
+<div class="container-fluid account-container d-flex">
+    <div class="account-menu">
+        <ul class="list-group list-group-flush">
+            <li class="list-group-item">
+                <a asp-area="Identity" asp-controller="Account" asp-action="Index">Account</a>
+            </li>
+            <li class="list-group-item">
+                <a asp-area="Identity" asp-controller="Security" asp-action="Index">Security settings</a>
+            </li>
+            <li class="list-group-item">
+                <a asp-page="/orders">My orders</a>
+            </li>
+            <li class="list-group-item">
+                <a asp-page="/creditcards">My credit cards</a>
+            </li>
+            <li class="list-group-item">
+                <a asp-page="/warranties">My warranties</a>
+            </li>
+            <li class="list-group-item">
+                <a asp-page="/rewies">My rewies</a>
+            </li>
+            <li class="list-group-item">
+                <a asp-page="/favorites">Favorites</a>
+            </li>
+        </ul>
+    </div>
+
+    <div class="account-content">
+        @RenderBody()
+    </div>
+</div>
+
+<script src="~/js/highlightSelectedBtn.js"></script>
+
+@*Make li item link script*@
+<script>
+    $(".list-group-item").on("click", function () {
+        $(this).children()[0].click();
+    })
+</script>

@@ -1,0 +1,118 @@
+﻿@model OnlineStore.Models.WebModels.Security.ViewModels.IndexViewModel
+@{
+    ViewData["Title"] = "Security";
+    Layout = "/Views/Shared/_LayoutAccount.cshtml";
+}
+
+<div class="account-content-inner d-flex">
+    <div>
+        <h4>Email</h4>
+        <div class="d-flex">
+            Current email address:&nbsp;&nbsp;
+            <form asp-action="EditEmail" id="formEmail" class="form-inline" method="post" hidden>
+                <input asp-for="Email" class="form-control" type="email" placeholder="Email" />
+                <button class="btn btn-custom-border-blue" type="submit">Submit</button>
+                <button id="btnCancelEmail" class="btn btn-custom-border-red" type="button">Cancel</button>
+            </form>
+            <b id="currentEmail">@Model.Email</b>
+            &nbsp;&nbsp;
+            <div id="iconEmailStatus">
+                @if (Model.EmailConfirmed)
+                {
+                    <i class="fas fa-check text-success fa-lg"></i>
+                }
+                else
+                {
+                    <i class="fas fa-times text-danger fa-lg"></i>
+                }
+            </div>
+        </div>
+    </div>
+
+    <div class="ml-auto">
+        <a id="editEmailBtn" class="btn btn-custom-border-blue">Edit</a>
+        @if (Model.EmailConfirmed == false)
+        {
+            <a id="btnConfirmEmail" class="btn btn-custom-border-blue">Send confirmation email</a>
+        }
+    </div>
+</div>
+
+<div class="account-content-inner d-flex">
+    <div>
+        <h4>Password</h4>
+        <p id="password">Password: <b>*******</b></p>
+        <form asp-action="EditPassword" id="formPassword" class="form-inline" method="post" hidden>
+            <input name="CurrentPassword" class="form-control" type="password" placeholder="Current Password" />
+            <input name="NewPassword" class="form-control" type="password" placeholder="New password" />
+            <input name="ConfirmPassword" class="form-control" type="password" placeholder="Confirm password" />
+            <button class="btn btn-custom-border-blue" type="submit">Submit</button>
+            <button id="btnCancelPassword" class="btn btn-custom-border-red" type="button">Cancel</button>
+        </form>
+    </div>
+
+    <div class="ml-auto">
+        <a id="btnPasswordEdit" class="btn btn-custom-border-blue">Edit</a>
+    </div>
+</div>
+
+<script>
+    $(function () {
+        //emailScript-------------------------------------------------------
+        let btnEmailEdit = $("#editEmailBtn");
+
+        btnEmailEdit.on("click", function () {
+            let btnConfirmEmail = $("#btnConfirmEmail");
+            let icon = $("#iconEmailStatus");
+            let currentEmail = $("#currentEmail");
+            let form = $("#formEmail");
+
+            hideElements(btnConfirmEmail, btnEmailEdit, icon, currentEmail);
+            showElements(form);
+
+            $("#btnCancelEmail").on("click", function () {
+                hideElements(form);
+                showElements(btnConfirmEmail, btnEmailEdit, icon, currentEmail);
+            });
+        });
+
+        //passwordScript-------------------------------------------------------
+        let btnPasswordEdit = $("#btnPasswordEdit");
+
+        btnPasswordEdit.on("click", function () {
+            let form = $("#formPassword");
+            let password = $("#password");
+            let btnEdit = $("#btnPasswordEdit");
+
+            hideElements(password, btnEdit);
+            showElements(form);
+
+            $("#btnCancelPassword").on("click", function () {
+                hideElements(form);
+                showElements(password, btnEdit);
+            });
+        });
+
+        //Shared functions------------------------------------------------------
+
+        function hideElements() {
+            let args = arguments
+
+            for (let a = 0; a < args.length; a++) {
+                let arg = args[a];
+                if (arg[0] !== undefined)
+                    arg[0].setAttribute("hidden", "hidden")
+            }
+        }
+
+        function showElements() {
+            let args = arguments
+
+            for (let a = 0; a < args.length; a++) {
+                let arg = args[a];
+                if (arg[0] !== undefined)
+                    arg[0].removeAttribute("hidden")
+            }
+        }
+    })
+</script>
