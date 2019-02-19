@@ -8,9 +8,9 @@
 <button class="navbar-toggler" data-toggle="collapse" data-target="#navbarMenu">
     <span class="navbar-toggler-icon"></span>
 </button>
-<form class="form-inline mx-auto">
+<form class="form-inline mx-auto" method="get" asp-action="Search" asp-controller="Products">
     <div class="input-group">
-        <input class="input-custom form-control" type="search" placeholder="Search" />
+        <input class="input-custom form-control" type="search" placeholder="Search" name="searchWords" />
         <div class="input-group-append">
             <button class="btn btn-custom" type="submit"><i class="fa fa-search"></i></button>
         </div>

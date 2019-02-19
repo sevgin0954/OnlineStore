@@ -1,0 +1,9 @@
+﻿@model IEnumerable<ProductConciseViewModel>
+<partial name="_ProductsPartialView">
+
+@if (Model.Count<ProductConciseViewModel>() == 0)
+{
+    <div class="d-flex">
+        <div class="m-auto"><h1>No results found</h1></div>
+    </div>
+}

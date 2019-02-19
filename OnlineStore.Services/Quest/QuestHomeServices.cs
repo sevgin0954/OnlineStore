@@ -50,17 +50,73 @@ namespace OnlineStore.Services.Quest
 
             var models = this.Mapper.Map<List<ProductConciseViewModel>>(products);
 
-            for (int a = 0; a < models.Count; a++)
-            {
-                models[a].MainPhoto = products[a].Photos.First().Data;
-                models[a].ReviewsCount = products[a].Reviews.Count;
-                models[a].ReviewsAvgStartRating = products[a].Reviews.Count > 0 ?
-                    (int)Math.Round(products[a].Reviews.Average(r => r.StarsCount), MidpointRounding.AwayFromZero)
-                        : 
-                    0;
-            }
+            this.MapProductModel(products, models);
 
             return models;
+        }
+
+        public IEnumerable<ProductConciseViewModel> GetProductsByKeywordsAsync(string words)
+        {
+            var wordsSplit = words
+                .Split(" ", StringSplitOptions.RemoveEmptyEntries)
+                .Where(w => w.Length > 3)
+                .Select(w => w.ToLower())
+                .ToList();
+
+            var products = this.DbContext
+                .Products
+                .Include(p => p.SubCategory)
+                .Include(p => p.Photos)
+                .ToList();
+
+            var filteredProducts = new List<Models.Product>();
+
+            foreach (var product in products)
+            {
+                var productName = product.Name.ToLower();
+                var productCategoryName = product.SubCategory.Name.ToLower();
+
+                bool isMatch = false;
+
+                foreach (var keyWord in wordsSplit)
+                {
+                    if (productName.IndexOf(keyWord) >= 0)
+                    {
+                        isMatch = true;
+                        break;
+                    }
+
+                    if (productCategoryName.IndexOf(keyWord) >= 0)
+                    {
+                        isMatch = true;
+                        break;
+                    }
+                }
+
+                if (isMatch)
+                {
+                    filteredProducts.Add(product);
+                }
+            }
+
+            var models = this.Mapper.Map<List<ProductConciseViewModel>>(filteredProducts);
+
+            this.MapProductModel(filteredProducts, models);
+
+            return models;
+        }
+
+        private void MapProductModel(List<Models.Product> source, List<ProductConciseViewModel> destination)
+        {
+            for (int a = 0; a < destination.Count; a++)
+            {
+                destination[a].MainPhoto = source[a].Photos.First().Data;
+                destination[a].ReviewsCount = source[a].Reviews.Count;
+                destination[a].ReviewsAvgStartRating = source[a].Reviews.Count > 0 ?
+                    (int)Math.Round(source[a].Reviews.Average(r => r.StarsCount), MidpointRounding.AwayFromZero)
+                        :
+                    0;
+            }
         }
     }
 }

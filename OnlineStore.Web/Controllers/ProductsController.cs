@@ -20,5 +20,13 @@ namespace OnlineStore.Web.Controllers
 
             return View(models);
         }
+
+        [HttpGet]
+        public IActionResult Search(string searchWords)
+        {
+            var models = this.questHomeServices.GetProductsByKeywordsAsync(searchWords);
+
+            return View(models);
+        }
     }
 }
