@@ -20,6 +20,10 @@
 
         public const string DefaultAdminPassword = "123456789";
 
+        public const string SessionProductsKey = "ProductsSessionKey";
+
         public const int BanUserDays = 365;
+
+        public const int SessionIdleTimeoutDays = 10;
     }
 }

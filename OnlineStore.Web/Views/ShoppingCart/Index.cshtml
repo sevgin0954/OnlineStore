@@ -1,0 +1,76 @@
+﻿@model IEnumerable<ProductShoppingCartViewModel>
+@{
+    ViewData["Title"] = "Index";
+}
+
+<div class="account-container d-flex">
+    <div class="account-content">
+        @if (Model == null || Model.Any() == false)
+        {
+            <div class="mx-auto">
+                <h2>Your cart is empty</h2>
+            </div>
+        }
+        else
+        {
+            foreach (var product in Model)
+            {
+                <div class="account-content-inner d-flex flex-row">
+                    <div id="productId" hidden>@product.Id</div>
+                    <div>
+                        <img class="profile-image" src="data:image/jpg;base64,@System.Convert.ToBase64String(@product.MainPhoto.Data)" />
+                    </div>
+                    <div><h3>@product.Name</h3></div>
+                    <select asp-for="@product.Count" class="form-control select-list-small">
+                        <option selected value="@product.Count">@product.Count</option>
+                        @for (int i = 1; i <= 50; i++)
+                        {
+                            if (i != @product.Count)
+                            {
+                                <option value="@i">@i</option>
+                            }
+                        }
+                    </select>
+                    Count
+                    <div class="ml-auto">
+                        <div>Price: </div>
+                        <div id="price">@product.Price.ToString("F")</div>
+                        <form asp-controller="ShoppingCart" asp-action="RemoveProduct" method="post">
+                            <input hidden name="productId" value="@product.Id" />
+                            <button class="btn-custom-border-red btn" type="submit">Remove</button>
+                        </form>
+                    </div>
+                </div>
+            }
+        }
+    </div>
+</div>
+
+@*Update count and price*@
+<script>
+    $(function () {
+        let selectLists = $(".select-list-small");
+
+        $(selectLists).on("change", function (event) {
+            let selectListElement = event.target
+            let selectListParent = $(selectListElement).closest("div")[0]
+            let countNumber = $(selectListElement).val();
+
+            let productId = $(selectListParent).children("#productId").text();
+            console.log(productId)
+
+            ajaxUpdateProductCount(productId, countNumber);
+        })
+
+        function ajaxUpdateProductCount(productId, count) {
+            $.ajax({
+                url: "/ShoppingCart/UpdateProductCount",
+                method: "POST",
+                data: { productId: productId, OrderQuantity: count },
+                success() {
+                    location.reload();
+                }
+            });
+        }
+    })
+</script>

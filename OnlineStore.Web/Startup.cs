@@ -55,7 +55,10 @@ namespace OnlineStore.Web
                 .AddEntityFrameworkStores<OnlineStoreDbContext>();
 
             services.AddAuthentication()
-                .AddCookie()
+                .AddCookie(options =>
+                {
+                    options.ExpireTimeSpan = TimeSpan.FromDays(WebConstants.SessionIdleTimeoutDays);
+                })
                 .AddFacebook(options => 
                 {
                     options.AppId = Configuration.GetSection("ExternalAuthentication:Facebook:AppId").Value;
@@ -66,6 +69,8 @@ namespace OnlineStore.Web
                     options.ClientId = Configuration.GetSection("ExternalAuthentication:Google:ClientId").Value;
                     options.ClientSecret = Configuration.GetSection("ExternalAuthentication:Google:ClientSecret").Value;
                 });
+
+            services.AddAntiforgery();
 
             services.AddAutoMapper();
 
@@ -91,6 +96,12 @@ namespace OnlineStore.Web
             services.Configure<MessageSenderOptions>(this.Configuration.GetSection("Email:SendGrid"));
 
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
+
+            services.AddSession(options =>
+            {
+                options.IdleTimeout = TimeSpan.FromDays(WebConstants.SessionIdleTimeoutDays);
+                options.Cookie.IsEssential = true;
+            });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -111,6 +122,7 @@ namespace OnlineStore.Web
             app.UseHttpsRedirection();
             app.UseStaticFiles();
             app.UseCookiePolicy();
+            app.UseSession();
 
             app.UseAuthentication();
 
@@ -145,6 +157,8 @@ namespace OnlineStore.Web
             services.AddScoped<IAdminProductsServices, AdminProductsServices>();
 
             services.AddScoped<IQuestHomeServices, QuestHomeServices>();
+
+            services.AddScoped<IShoppingCartService, ShoppingCartService>();
 
             services.AddSingleton<IEmailSender, EmailSender>();
         }

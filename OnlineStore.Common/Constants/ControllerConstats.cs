@@ -48,6 +48,8 @@
 
         public const string MessageSuccefullyDeleted = "Succesfully deleted";
 
+        public const string MessageSuccefullyRemoved = "Succesfully removed";
+
         //------------------------------------------------------------------------------------
 
         public const string MessageTypeSuccess = "success";

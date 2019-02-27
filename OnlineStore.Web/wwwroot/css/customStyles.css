@@ -292,6 +292,11 @@
     margin-top: 100px;
 }
 
+.select-list-small {
+    width: auto;
+    display: inline-block;
+}
+
 div.account-menu > ul > li {
     border: none;
 }

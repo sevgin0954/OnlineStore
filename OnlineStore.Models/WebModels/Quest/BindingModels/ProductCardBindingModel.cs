@@ -5,7 +5,7 @@ namespace OnlineStore.Models.WebModels.Quest.BindingModels
     public class ProductCardBindingModel
     {
         [Required]
-        public string Id { get; set; }
+        public string ProductId { get; set; }
 
         [Required]
         public int OrderQuantity { get; set; }
