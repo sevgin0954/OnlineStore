@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using OnlineStore.Data;
 using OnlineStore.Models;
@@ -13,23 +14,25 @@ namespace OnlineStore.Services.Admin
 {
     public class AdminProductsServices : BaseService, IAdminProductsServices
     {
+        private readonly IMapper mapper;
+
         public AdminProductsServices(OnlineStoreDbContext dbContext, IMapper mapper)
-            : base(dbContext, mapper) { }
+            : base(dbContext)
+        {
+            this.mapper = mapper;
+        }
 
         public ProductBindingModel PrepareModelForAddding(string subcategoryId)
         {
-            var dbSubcategory = this.DbContext.SubCategories.Find(subcategoryId);
+            var dbSubcategory = this.DbContext.SubCategories
+                .Find(subcategoryId);
 
             if (dbSubcategory == null)
             {
                 return null;
             }
 
-            var model = new ProductBindingModel()
-            {
-                SubCategoryId = subcategoryId,
-                SubCategoryName = dbSubcategory.Name
-            };
+            var model = this.mapper.Map<ProductBindingModel>(dbSubcategory);
 
             return model;
         }
@@ -37,17 +40,9 @@ namespace OnlineStore.Services.Admin
         public async Task AddProduct(ProductBindingModel model)
         {
 
-            var dbModel = this.Mapper.Map<Product>(model);
+            var dbModel = this.mapper.Map<Product>(model);
 
-            using (var memoryStream = new MemoryStream())
-            {
-                foreach (var photo in model.Photos)
-                {
-                    await photo.CopyToAsync(memoryStream);
-                    var dbPhoto = new Photo() { Data = memoryStream.ToArray() };
-                    dbModel.Photos.Add(dbPhoto);
-                }
-            }
+            await this.MapPhotos(dbModel, model.Photos);
 
             await this.DbContext.Products.AddAsync(dbModel);
             await this.DbContext.SaveChangesAsync();
@@ -67,7 +62,7 @@ namespace OnlineStore.Services.Admin
                 return null;
             }
 
-            var models = this.Mapper.Map<List<ProductViewModel>>(subcategory.Products);
+            var models = this.mapper.Map<List<ProductViewModel>>(subcategory.Products);
 
             return models;
         }
@@ -84,8 +79,7 @@ namespace OnlineStore.Services.Admin
                 return null;
             }
 
-            var model = this.Mapper.Map<ProductBindingModel>(product);
-            model.SubCategoryName = product.SubCategory.Name;
+            var model = this.mapper.Map<ProductBindingModel>(product);
 
             return model;
         }
@@ -97,28 +91,19 @@ namespace OnlineStore.Services.Admin
                 return false;
             }
 
-            var dbModel = await this.DbContext.Products.FindAsync(productId);
+            var dbModel = await this.DbContext.Products
+                .FindAsync(productId);
 
             if (dbModel == null)
             {
                 return false;
             }
 
-            this.Mapper.Map(model, dbModel);
+            this.mapper.Map(model, dbModel);
 
             if (model.Photos.Count > 0)
             {
-                using (var memoryStream = new MemoryStream())
-                {
-                    dbModel.Photos = new List<Photo>();
-
-                    foreach (var photo in model.Photos)
-                    {
-                        await photo.CopyToAsync(memoryStream);
-                        var dbPhoto = new Photo() { Data = memoryStream.ToArray() };
-                        dbModel.Photos.Add(dbPhoto);
-                    }
-                }
+                await this.MapPhotos(dbModel, model.Photos);
             }
 
             await this.DbContext.SaveChangesAsync();
@@ -146,6 +131,19 @@ namespace OnlineStore.Services.Admin
             await this.DbContext.SaveChangesAsync();
 
             return true;
+        }
+
+        private async Task MapPhotos(Product destination, IEnumerable<IFormFile> photos)
+        {
+            using (var memoryStream = new MemoryStream())
+            {
+                foreach (var photo in photos)
+                {
+                    await photo.CopyToAsync(memoryStream);
+                    var dbPhoto = new Photo() { Data = memoryStream.ToArray() };
+                    destination.Photos.Add(dbPhoto);
+                }
+            }
         }
     }
 }

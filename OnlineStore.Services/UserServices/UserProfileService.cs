@@ -18,44 +18,33 @@ namespace OnlineStore.Services.UserServices
 {
     public class UserProfileService : BaseService, IUserProfileService
     {
+        public readonly IMapper mapper;
+        public readonly UserManager<User> userManager;
+
         public UserProfileService(OnlineStoreDbContext dbContext, IMapper mapper, UserManager<User> userManager)
-            : base(dbContext, mapper, userManager) { }
+            : base(dbContext)
+        {
+            this.mapper = mapper;
+            this.userManager = userManager;
+        }
 
         public async Task<IndexViewModel> PrepareIndexForEditingAsync(ClaimsPrincipal user)
         {
-            var dbUser = this.DbContext.Users
-                .Where(u => u.UserName == user.Identity.Name)
-                .Include(u => u.DeliveryInfos)
-                    .ThenInclude(di => di.District)
-                .Include(u => u.DeliveryInfos)
-                    .ThenInclude(di => di.PopulatedPlace)
-                .Include(u => u.ProfilePicture)
-                .FirstOrDefault();
+            var dbUser = await GetUserFromDatabase(user.Identity.Name);
 
             if (dbUser == null)
             {
                 return null;
             }
 
-            var model = new IndexViewModel()
-            {
-                FullName = dbUser.FullName,
-                DeliveryInfos = this.MapDeliveryInfos(dbUser.DeliveryInfos),
-                Email = await this.UserManager.GetEmailAsync(dbUser),
-                PhoneNumber = await this.UserManager.GetPhoneNumberAsync(dbUser)
-            };
-
-            if (dbUser.ProfilePicture != null)
-            {
-                model.ProfileImageAsByte = dbUser.ProfilePicture.Data;
-            }
+            var model = await MapUserModel(dbUser);
 
             return model;
         }
 
         public async Task UpdateProfilePictureAsync(ClaimsPrincipal user, IFormFile picture)
         {
-            var dbUser = await this.UserManager.GetUserAsync(user);
+            var dbUser = await this.userManager.GetUserAsync(user);
 
             using (var memoryStream = new MemoryStream())
             {
@@ -68,29 +57,29 @@ namespace OnlineStore.Services.UserServices
 
         public async Task<PersonInfoBindingModel> PreparePersonInfoForEditingAsync(ClaimsPrincipal user)
         {
-            User dbUser = await this.UserManager.GetUserAsync(user);
+            var dbUser = await this.userManager.GetUserAsync(user);
 
-            var model = this.Mapper.Map<PersonInfoBindingModel>(dbUser);
+            var model = this.mapper.Map<PersonInfoBindingModel>(dbUser);
 
             return model;
         }
 
         public async Task EditPersonInfoAsync(ClaimsPrincipal user, PersonInfoBindingModel model)
         {
-            var dbUser = await this.UserManager.GetUserAsync(user);
+            var dbUser = await this.userManager.GetUserAsync(user);
 
-            this.Mapper.Map(model, dbUser);
+            this.mapper.Map(model, dbUser);
 
             await this.DbContext.SaveChangesAsync();
         }
 
-        private List<DeliveryInfoViewModel> MapDeliveryInfos(ICollection<DeliveryInfo> deliveryInfos)
+        private IList<DeliveryInfoViewModel> MapDeliveryInfos(ICollection<DeliveryInfo> deliveryInfos)
         {
-            List<DeliveryInfoViewModel> models = new List<DeliveryInfoViewModel>();
+            var models = new List<DeliveryInfoViewModel>();
 
             foreach (var deliveryInfo in deliveryInfos)
             {
-                var model = this.Mapper.Map<DeliveryInfoViewModel>(deliveryInfo);
+                var model = this.mapper.Map<DeliveryInfoViewModel>(deliveryInfo);
 
                 model.SelectedDistrictName = deliveryInfo.District.Name;
                 model.SelectedPopulatedName = deliveryInfo.PopulatedPlace.Name;
@@ -99,6 +88,36 @@ namespace OnlineStore.Services.UserServices
             }
 
             return models;
+        }
+
+        private async Task<User> GetUserFromDatabase(string username)
+        {
+            return await this.DbContext.Users
+                .Where(u => u.UserName == username)
+                .Include(u => u.DeliveryInfos)
+                    .ThenInclude(di => di.District)
+                .Include(u => u.DeliveryInfos)
+                    .ThenInclude(di => di.PopulatedPlace)
+                .Include(u => u.ProfilePicture)
+                .FirstOrDefaultAsync();
+        }
+
+        private async Task<IndexViewModel> MapUserModel(User source)
+        {
+            var model = new IndexViewModel()
+            {
+                FullName = source.FullName,
+                DeliveryInfos = this.MapDeliveryInfos(source.DeliveryInfos),
+                Email = await this.userManager.GetEmailAsync(source),
+                PhoneNumber = await this.userManager.GetPhoneNumberAsync(source)
+            };
+
+            if (source.ProfilePicture != null)
+            {
+                model.ProfileImageAsByte = source.ProfilePicture.Data;
+            }
+
+            return model;
         }
     }
 }

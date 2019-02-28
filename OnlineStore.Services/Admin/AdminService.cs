@@ -11,8 +11,13 @@ namespace OnlineStore.Services.Admin
 {
     public class AdminService : BaseService, IAdminService
     {
+        public readonly UserManager<User> userManager;
+
         public AdminService(OnlineStoreDbContext dbContext, UserManager<User> userManager)
-            : base(dbContext, userManager) { }
+            : base(dbContext)
+        {
+            this.userManager = userManager;
+        }
 
         public IndexViewModel PrepareIndexModelForEditing()
         {
@@ -38,7 +43,7 @@ namespace OnlineStore.Services.Admin
 
         public IEnumerable<User> FilterUsersByRegisterDate(DateTime startDate, DateTime endDate)
         {
-            var users = this.UserManager.Users;
+            var users = this.userManager.Users;
 
             var filteredUsers = users.Where(u => u.RegisterDate > startDate && u.RegisterDate < endDate);
 
@@ -56,7 +61,7 @@ namespace OnlineStore.Services.Admin
 
         public long CountTotalUsers()
         {
-            return this.UserManager.Users.LongCount();
+            return this.userManager.Users.LongCount();
         }
 
         public long CountTotalOrders()

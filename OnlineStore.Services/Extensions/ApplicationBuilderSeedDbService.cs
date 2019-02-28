@@ -18,8 +18,7 @@ namespace OnlineStore.Services.Extensions
             new IdentityRole(WebConstants.AdminRole)
         };
 
-        public ApplicationBuilderSeedDbService(
-            OnlineStoreDbContext dbContext, RoleManager<IdentityRole> roleManager)
+        public ApplicationBuilderSeedDbService(OnlineStoreDbContext dbContext, RoleManager<IdentityRole> roleManager)
             : base(dbContext)
         {
             this.districtsNamesPopulatedPlacesNames = new Dictionary<string, string[]>();

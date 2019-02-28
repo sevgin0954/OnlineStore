@@ -95,27 +95,27 @@ namespace OnlineStore.Web.Areas.Admin.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Edit(ProductBindingModel model, string id)
+        public async Task<IActionResult> Edit(ProductBindingModel model)
         {
             if (ModelState.IsValid == false)
             {
                 this.AddStatusMessage(ModelState);
-                return this.RedirectToAction("Edit", new { id });
+                return this.RedirectToAction("Edit", new { model.ProductId });
             }
 
-            var result = await this.productsServices.Edit(model, id);
+            var result = this.ValidateImages(model.Photos);
+
+            if (result == false)
+            {
+                return this.RedirectToAction("Edit", new { model.ProductId });
+            }
+
+            result = await this.productsServices.Edit(model, model.ProductId);
 
             if (result == false)
             {
                 this.AddStatusMessage(ControllerConstats.ErrorMessageUnknownError, ControllerConstats.MessageTypeDanger);
-                return this.RedirectToAction("Edit", new { id });
-            }
-
-            result = this.ValidateImages(model.Photos);
-
-            if (result == false)
-            {
-                return this.RedirectToAction("Edit", new { id });
+                return this.RedirectToAction("Edit", new { model.ProductId });
             }
 
             this.AddStatusMessage(ControllerConstats.MessageSuccefullyEdited, ControllerConstats.MessageTypeSuccess);

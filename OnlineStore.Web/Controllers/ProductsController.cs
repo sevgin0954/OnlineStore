@@ -16,7 +16,7 @@ namespace OnlineStore.Web.Controllers
         [HttpGet]
         public async Task<IActionResult> Products(string subcategoryId)
         {
-            var models = await this.questHomeServices.GetProductsAsync(subcategoryId);
+            var models = await this.questHomeServices.GetProductsBySubcategoryAsync(subcategoryId);
 
             return View(models);
         }
@@ -24,7 +24,7 @@ namespace OnlineStore.Web.Controllers
         [HttpGet]
         public IActionResult Search(string searchWords)
         {
-            var models = this.questHomeServices.GetProductsByKeywordsAsync(searchWords);
+            var models = this.questHomeServices.GetProductsByKeywords(searchWords);
 
             return View(models);
         }

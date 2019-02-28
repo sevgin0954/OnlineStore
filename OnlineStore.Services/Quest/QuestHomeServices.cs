@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using Microsoft.EntityFrameworkCore;
 using OnlineStore.Data;
+using OnlineStore.Models;
 using OnlineStore.Models.WebModels.Quest.ViewModels;
 using OnlineStore.Services.Quest.Interfaces;
 using System;
@@ -12,11 +13,13 @@ namespace OnlineStore.Services.Quest
 {
     public class QuestHomeServices : BaseService, IQuestHomeServices
     {
-        public QuestHomeServices(OnlineStoreDbContext dbContext, IMapper mapper)
-            : base(dbContext, mapper) { }
+        private readonly IMapper mapper;
 
-        public QuestHomeServices(OnlineStoreDbContext dbContext)
-            : base(dbContext) { }
+        public QuestHomeServices(OnlineStoreDbContext dbContext, IMapper mapper)
+            : base(dbContext)
+        {
+            this.mapper = mapper;
+        }
 
         public IndexViewModel PrepareIndexModel()
         {
@@ -32,7 +35,67 @@ namespace OnlineStore.Services.Quest
             return model;
         }
 
-        public async Task<IEnumerable<ProductConciseViewModel>> GetProductsAsync(string subcategoryId)
+        public async Task<IEnumerable<ProductConciseViewModel>> GetProductsBySubcategoryAsync(string subcategoryId)
+        {
+            var products = await GetProductFromDatabase(subcategoryId);
+
+            if (products == null)
+            {
+                return null;
+            }
+
+            var models = this.MapProductModels(products);
+
+            return models;
+        }
+
+        public IEnumerable<ProductConciseViewModel> GetProductsByKeywords(string words)
+        {
+            var keyWords = ExtractKeyWords(words);
+            var products = GetProductsFromDatabase();
+            var filteredProducts = FilterProductsByKeyWords(keyWords, products);
+
+            var models = this.MapProductModels(filteredProducts);
+
+            return models;
+        }
+
+        private IEnumerable<Product> GetProductsFromDatabase()
+        {
+            return this.DbContext
+                .Products
+                .Include(p => p.SubCategory)
+                .Include(p => p.Photos)
+                .ToList();
+        }
+
+        private static IEnumerable<string> ExtractKeyWords(string words, int minLengthPerWord = 2)
+        {
+            return words
+                .Split(" ", StringSplitOptions.RemoveEmptyEntries)
+                .Where(w => w.Length > minLengthPerWord)
+                .Select(w => w.ToLower())
+                .ToList();
+        }
+
+        private IList<ProductConciseViewModel> MapProductModels(IList<Product> source)
+        {
+            var destination = this.mapper.Map<List<ProductConciseViewModel>>(source);
+
+            for (int a = 0; a < destination.Count; a++)
+            {
+                destination[a].MainPhoto = source[a].Photos.First().Data;
+                destination[a].ReviewsCount = source[a].Reviews.Count;
+                destination[a].ReviewsAvgStartRating = source[a].Reviews.Count > 0 ?
+                    (int)Math.Round(source[a].Reviews.Average(r => r.StarsCount), MidpointRounding.AwayFromZero)
+                        :
+                    0;
+            }
+
+            return destination;
+        }
+
+        private async Task<IList<Product>> GetProductFromDatabase(string subcategoryId)
         {
             var subcategory = await this.DbContext.SubCategories
                 .Include(sc => sc.Products)
@@ -41,35 +104,19 @@ namespace OnlineStore.Services.Quest
                     .ThenInclude(p => p.Photos)
                 .FirstOrDefaultAsync(sc => sc.Id == subcategoryId);
 
-            var products = subcategory.Products.ToList();
-
             if (subcategory == null)
             {
                 return null;
             }
 
-            var models = this.Mapper.Map<List<ProductConciseViewModel>>(products);
+            var products = subcategory.Products.ToList();
 
-            this.MapProductModel(products, models);
-
-            return models;
+            return products;
         }
 
-        public IEnumerable<ProductConciseViewModel> GetProductsByKeywordsAsync(string words)
+        private static IList<Product> FilterProductsByKeyWords(IEnumerable<string> keyWords, IEnumerable<Product> products)
         {
-            var wordsSplit = words
-                .Split(" ", StringSplitOptions.RemoveEmptyEntries)
-                .Where(w => w.Length > 3)
-                .Select(w => w.ToLower())
-                .ToList();
-
-            var products = this.DbContext
-                .Products
-                .Include(p => p.SubCategory)
-                .Include(p => p.Photos)
-                .ToList();
-
-            var filteredProducts = new List<Models.Product>();
+            var filteredProducts = new List<Product>();
 
             foreach (var product in products)
             {
@@ -78,7 +125,7 @@ namespace OnlineStore.Services.Quest
 
                 bool isMatch = false;
 
-                foreach (var keyWord in wordsSplit)
+                foreach (var keyWord in keyWords)
                 {
                     if (productName.IndexOf(keyWord) >= 0)
                     {
@@ -99,24 +146,7 @@ namespace OnlineStore.Services.Quest
                 }
             }
 
-            var models = this.Mapper.Map<List<ProductConciseViewModel>>(filteredProducts);
-
-            this.MapProductModel(filteredProducts, models);
-
-            return models;
-        }
-
-        private void MapProductModel(List<Models.Product> source, List<ProductConciseViewModel> destination)
-        {
-            for (int a = 0; a < destination.Count; a++)
-            {
-                destination[a].MainPhoto = source[a].Photos.First().Data;
-                destination[a].ReviewsCount = source[a].Reviews.Count;
-                destination[a].ReviewsAvgStartRating = source[a].Reviews.Count > 0 ?
-                    (int)Math.Round(source[a].Reviews.Average(r => r.StarsCount), MidpointRounding.AwayFromZero)
-                        :
-                    0;
-            }
+            return filteredProducts;
         }
     }
 }

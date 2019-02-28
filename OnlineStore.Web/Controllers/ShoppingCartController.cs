@@ -17,6 +17,7 @@ namespace OnlineStore.Web.Controllers
             this.shoppingCartService = shoppingCartService;
         }
 
+        [HttpGet]
         public async Task<IActionResult> Index()
         {
             var model = await this.shoppingCartService.GetProductsAsync(this.HttpContext.Session);

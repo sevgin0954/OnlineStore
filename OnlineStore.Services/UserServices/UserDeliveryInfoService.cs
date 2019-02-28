@@ -16,13 +16,20 @@ namespace OnlineStore.Services.UserServices
 {
     public class UserDeliveryInfoService : BaseService, IUserDeliveryInfoService
     {
+        public readonly IMapper mapper;
+        public readonly UserManager<User> userManager;
+
         public UserDeliveryInfoService(
             OnlineStoreDbContext dbContext, IMapper mapper, UserManager<User> userManager)
-            : base(dbContext, mapper, userManager) { }
+            : base(dbContext)
+        {
+            this.mapper = mapper;
+            this.userManager = userManager;
+        }
 
         public DeliveryInfoBindingModel PrepareDeliveryInfoModelForAdding()
         {
-            DeliveryInfoBindingModel model = new DeliveryInfoBindingModel();
+            var model = new DeliveryInfoBindingModel();
             this.PopulateSelectLists(model);
 
             return model;
@@ -30,23 +37,24 @@ namespace OnlineStore.Services.UserServices
 
         public async Task AddDeliveryInfoToUserAsync(ClaimsPrincipal user, DeliveryInfoBindingModel model)
         {
-            var dbUser = await this.UserManager.GetUserAsync(user);
-            var deliveryInfoDbModel = this.Mapper.Map<DeliveryInfo>(model);
+            var dbUser = await this.userManager.GetUserAsync(user);
+            var deliveryInfoDbModel = this.mapper.Map<DeliveryInfo>(model);
             
             dbUser.DeliveryInfos.Add(deliveryInfoDbModel);
+
             this.DbContext.SaveChanges();
         }
 
         public DeliveryInfoBindingModel PrepareDeliveryInfoModelForEditing(ClaimsPrincipal user, string deliveryInfoId)
         {
-            var deliveryInfoDbModel = this.GetDeliveryInfo(user, deliveryInfoId);
+            var deliveryInfoDbModel = this.GetDeliveryInfoFromUser(user, deliveryInfoId);
 
             if (deliveryInfoDbModel == null)
             {
                 return null;
             }
 
-            var deliveryInfoModel = this.Mapper.Map<DeliveryInfoBindingModel>(deliveryInfoDbModel);
+            var deliveryInfoModel = this.mapper.Map<DeliveryInfoBindingModel>(deliveryInfoDbModel);
 
             var dbDistrict = this.DbContext.Districts.Find(deliveryInfoModel.SelectedDistrictId);
             var dbPopulatedPlace = this.DbContext.PopulatedPlaces.Find(deliveryInfoModel.SelectedPopulatedPlaceId);
@@ -58,14 +66,14 @@ namespace OnlineStore.Services.UserServices
 
         public async Task<bool> EditDeliveryInfoAsync(ClaimsPrincipal user, DeliveryInfoBindingModel model, string deliveryInfoId)
         {
-            var deliveryInfoModel = GetDeliveryInfo(user, deliveryInfoId);
+            var deliveryInfoModel = GetDeliveryInfoFromUser(user, deliveryInfoId);
 
             if (deliveryInfoModel == null)
             {
                 return false;
             }
 
-            this.Mapper.Map(model, deliveryInfoModel);
+            this.mapper.Map(model, deliveryInfoModel);
 
             await this.DbContext.SaveChangesAsync();
 
@@ -74,7 +82,7 @@ namespace OnlineStore.Services.UserServices
 
         public bool DeleteDeliveryInfo(ClaimsPrincipal user, string deliveryInfoID)
         {
-            var deliveryInfoDbModel = this.GetDeliveryInfo(user, deliveryInfoID);
+            var deliveryInfoDbModel = this.GetDeliveryInfoFromUser(user, deliveryInfoID);
 
             if (deliveryInfoDbModel == null)
             {
@@ -82,6 +90,7 @@ namespace OnlineStore.Services.UserServices
             }
 
             this.DbContext.DeliverysInfos.Remove(deliveryInfoDbModel);
+
             this.DbContext.SaveChanges();
 
             return true;
@@ -108,34 +117,27 @@ namespace OnlineStore.Services.UserServices
             District selectedDistrict = null, 
             PopulatedPlace selectedPopulatedPlace = null)
         {
-            model.AllDistricts = this.DbContext
-                    .Districts
-                    .Select(d => new SelectListItem() { Text = d.Name, Value = d.Id, Selected = false })
-                    .ToList();
+            model.AllDistricts = GetDistrictsAsSelectList();
 
-            model.AllPopulatedPlaces = this.DbContext
-                .PopulatedPlaces
-                .Select(pp => new SelectListItem() { Text = pp.Name, Value = pp.Id, Selected = false })
-                .ToList();
+            model.AllPopulatedPlaces = GetPopulatedPlacesAsSelectList();
 
-            model
-                .AllPopulatedPlaces
-                .Add(new SelectListItem() { Text = ControllerConstats.FromPlaceholderPopulatedPlace, Selected = true, Disabled = true });
+            AddDefaultPopulatedPlace(model.AllPopulatedPlaces);
 
             if (selectedDistrict == null || selectedPopulatedPlace == null)
             {
-                model
-                    .AllDistricts
-                    .Add(new SelectListItem() { Text = ControllerConstats.FromPlaceholderDistrict, Selected = true, Disabled = true });
+                AddDefaultDistrict(model.AllDistricts);
             }
-            else if (selectedPopulatedPlace != null && selectedDistrict != null)
+            else
             {
-                model.AllDistricts.First(d => d.Value == selectedDistrict.Id).Selected = true;
-                model.AllPopulatedPlaces.First(pp => pp.Value == selectedPopulatedPlace.Id).Selected = true;
+                model.AllDistricts
+                    .First(d => d.Value == selectedDistrict.Id).Selected = true;
+
+                model.AllPopulatedPlaces
+                    .First(pp => pp.Value == selectedPopulatedPlace.Id).Selected = true;
             }
         }
 
-        private DeliveryInfo GetDeliveryInfo(ClaimsPrincipal user, string deliveryInfoId)
+        private DeliveryInfo GetDeliveryInfoFromUser(ClaimsPrincipal user, string deliveryInfoId)
         {
             var dbUser = this.DbContext.Users
                 .Include(u => u.DeliveryInfos)
@@ -150,6 +152,44 @@ namespace OnlineStore.Services.UserServices
                 .FirstOrDefault(di => di.Id == deliveryInfoId);
 
             return deliveryInfoDbModel;
+        }
+
+        private ICollection<SelectListItem> GetDistrictsAsSelectList()
+        {
+            return this.DbContext
+                    .Districts
+                    .Select(d => new SelectListItem() { Text = d.Name, Value = d.Id, Selected = false })
+                    .ToList();
+        }
+
+        private ICollection<SelectListItem> GetPopulatedPlacesAsSelectList()
+        {
+            return this.DbContext
+                .PopulatedPlaces
+                .Select(pp => new SelectListItem() { Text = pp.Name, Value = pp.Id, Selected = false })
+                .ToList();
+        }
+
+        private void AddDefaultPopulatedPlace(ICollection<SelectListItem> populatedPlaces)
+        {
+            populatedPlaces
+                .Add(new SelectListItem()
+                {
+                    Text = ControllerConstats.FromPlaceholderPopulatedPlace,
+                    Selected = true,
+                    Disabled = true
+                });
+        }
+
+        private void AddDefaultDistrict(ICollection<SelectListItem> districts)
+        {
+            districts
+                .Add(new SelectListItem()
+                {
+                    Text = ControllerConstats.FromPlaceholderDistrict,
+                    Selected = true,
+                    Disabled = true
+                });
         }
     }
 }

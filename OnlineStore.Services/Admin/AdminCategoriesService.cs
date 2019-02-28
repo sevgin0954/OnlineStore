@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using AutoMapper;
+using Microsoft.EntityFrameworkCore;
 using OnlineStore.Data;
 using OnlineStore.Models;
 using OnlineStore.Models.WebModels.Admin.BindingModels;
@@ -12,8 +13,13 @@ namespace OnlineStore.Services.Admin
 {
     public class AdminCategoriesService : BaseService, IAdminCategoriesService
     {
-        public AdminCategoriesService(OnlineStoreDbContext dbContext)
-            : base(dbContext) { }
+        public readonly IMapper mapper;
+
+        public AdminCategoriesService(OnlineStoreDbContext dbContext, IMapper mapper)
+            : base(dbContext)
+        {
+            this.mapper = mapper;
+        }
 
         public IList<CategoryViewModel> GetAllCategories()
         {
@@ -22,24 +28,7 @@ namespace OnlineStore.Services.Admin
                     .ThenInclude(sc => sc.Products)
                 .ToList();
 
-            var models = new List<CategoryViewModel>();
-            if (dbCategories.Count == 0)
-            {
-                return models;
-            }
-
-            foreach (var dbCategory in dbCategories)
-            {
-                var model = new CategoryViewModel()
-                {
-                    CategoryId = dbCategory.Id,
-                    Name = dbCategory.Name,
-                    SubCategories = dbCategory.SubCategories,
-                    TotalProductsCount = dbCategory.SubCategories.Sum(sc => sc.Products.Count)
-                };
-
-                models.Add(model);
-            }
+            var models = this.MapCategoriesModels(dbCategories);
 
             return models;
         }
@@ -57,7 +46,8 @@ namespace OnlineStore.Services.Admin
 
         public async Task<SubCategoryBindingCategory> PrepareModelForAdding(string categoryId)
         {
-            var dbCategory = await this.DbContext.Categories.FirstOrDefaultAsync(c => c.Id == categoryId);
+            var dbCategory = await this.DbContext.Categories
+                .FirstOrDefaultAsync(c => c.Id == categoryId);
 
             if (dbCategory == null)
             {
@@ -88,6 +78,26 @@ namespace OnlineStore.Services.Admin
         private long CountTotalProducts(CategoryViewModel model)
         {
             return model.SubCategories.LongCount();
+        }
+
+        private IList<CategoryViewModel> MapCategoriesModels(ICollection<Category> categories)
+        {
+            var models = new List<CategoryViewModel>();
+
+            if (categories.Count == 0)
+            {
+                return models;
+            }
+
+            foreach (var category in categories)
+            {
+                var model = this.mapper.Map<CategoryViewModel>(category);
+                model.TotalProductsCount = category.SubCategories.Sum(sc => sc.Products.Count);
+
+                models.Add(model);
+            }
+
+            return models;
         }
     }
 }

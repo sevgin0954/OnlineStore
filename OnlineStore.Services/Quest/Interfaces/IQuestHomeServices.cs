@@ -8,8 +8,8 @@ namespace OnlineStore.Services.Quest.Interfaces
     {
         IndexViewModel PrepareIndexModel();
 
-        Task<IEnumerable<ProductConciseViewModel>> GetProductsAsync(string subcategoryId);
+        Task<IEnumerable<ProductConciseViewModel>> GetProductsBySubcategoryAsync(string subcategoryId);
 
-        IEnumerable<ProductConciseViewModel> GetProductsByKeywordsAsync(string words);
+        IEnumerable<ProductConciseViewModel> GetProductsByKeywords(string words);
     }
 }

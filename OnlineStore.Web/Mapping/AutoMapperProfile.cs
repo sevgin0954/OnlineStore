@@ -1,7 +1,6 @@
 ﻿using AutoMapper;
 using OnlineStore.Models;
 using OnlineStore.Models.WebModels.Account.BindingModels;
-using OnlineStore.Models.WebModels.Account.ViewModels;
 using OnlineStore.Models.WebModels.Admin.BindingModels;
 using OnlineStore.Models.WebModels.Admin.ViewModels;
 using OnlineStore.Models.WebModels.DeliveryInfo.BindingModels;
@@ -21,8 +20,8 @@ namespace OnlineStore.Web.Mapping
                 .ReverseMap();
 
             this.CreateMap<DeliveryInfoBindingModel, DeliveryInfo>()
-                .ForMember("DistrictId", opt => opt.MapFrom(src => src.SelectedDistrictId))
-                .ForMember("PopulatedPlaceId", opt => opt.MapFrom(src => src.SelectedPopulatedPlaceId))
+                .ForMember(dest => dest.DistrictId, opt => opt.MapFrom(src => src.SelectedDistrictId))
+                .ForMember(dest => dest.PopulatedPlaceId, opt => opt.MapFrom(src => src.SelectedPopulatedPlaceId))
                 .ReverseMap();
 
             this.CreateMap<PersonInfoBindingModel, User>()
@@ -30,12 +29,15 @@ namespace OnlineStore.Web.Mapping
 
             this.CreateMap<User, Security.IndexViewModel>();
 
-            this.CreateMap<Category, CategoryViewModel>();
+            this.CreateMap<Category, CategoryViewModel>()
+                .ForMember(dest => dest.CategoryId, opt => opt.MapFrom(src => src.Id));
 
             this.CreateMap<ProductBindingModel, Product>()
-                .ForMember(m => m.Photos, opt => opt.Ignore())
+                .ForMember(dest => dest.Photos, opt => opt.Ignore())
                 .ReverseMap()
-                .ForMember(m => m.Photos, opt => opt.Ignore());
+                .ForMember(dest => dest.Photos, opt => opt.Ignore())
+                .ForMember(dest => dest.ProductId, opt => opt.MapFrom(src => src.Id))
+                .ForMember(dest => dest.SubCategoryName, opt => opt.MapFrom(src => src.SubCategory.Name));
 
             this.CreateMap<Product, Quest.ProductConciseViewModel>();
 
@@ -43,7 +45,14 @@ namespace OnlineStore.Web.Mapping
                 .ForMember(dest => dest.MainPhoto, opt => opt.Ignore());
 
             this.CreateMap<Product, ProductSessionModel>()
-                .ForMember("ProductId", opt => opt.MapFrom(src => src.Id));
+                .ForMember(dest => dest.ProductId, opt => opt.MapFrom(src => src.Id));
+
+            this.CreateMap<User, UsersViewModel>()
+                .ForMember(dest => dest.OrdersCount, opt => opt.MapFrom(src => src.Orders.Count));
+
+            this.CreateMap<SubCategory, ProductBindingModel>()
+                .ForMember(dest => dest.SubCategoryName, opt => opt.MapFrom(src => src.Name))
+                .ForMember(dest => dest.Photos, opt => opt.Ignore());
         }
     }
 }

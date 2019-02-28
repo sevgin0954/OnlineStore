@@ -7,7 +7,7 @@ namespace OnlineStore.Services.Admin.Interfaces
 {
     public interface IAdminUsersService
     {
-        Task<IList<UsersViewModel>> PrepareModelForEditingAsync();
+        Task<IEnumerable<UsersViewModel>> PrepareModelForEditingAsync();
 
         Task<IdentityResult> ChangeStateAsync(string userId);
 

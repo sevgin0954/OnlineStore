@@ -16,6 +16,6 @@ namespace OnlineStore.Models.WebModels.Account.ViewModels
 
         public byte[] ProfileImageAsByte { get; set; }
 
-        public List<DeliveryInfoViewModel> DeliveryInfos { get; set; }
+        public IList<DeliveryInfoViewModel> DeliveryInfos { get; set; }
     }
 }

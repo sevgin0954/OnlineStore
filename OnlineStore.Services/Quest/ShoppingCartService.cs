@@ -4,6 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using OnlineStore.Common.Constants;
 using OnlineStore.Common.Helpers;
 using OnlineStore.Data;
+using OnlineStore.Models;
 using OnlineStore.Models.WebModels.Quest.BindingModels;
 using OnlineStore.Models.WebModels.Quest.ViewModels;
 using OnlineStore.Models.WebModels.Session;
@@ -16,8 +17,13 @@ namespace OnlineStore.Services.Quest
 {
     public class ShoppingCartService : BaseService, IShoppingCartService
     {
+        private readonly IMapper mapper;
+
         public ShoppingCartService(OnlineStoreDbContext dbContext, IMapper mapper)
-            : base(dbContext, mapper) { }
+            : base(dbContext)
+        {
+            this.mapper = mapper;
+        }
 
         public async Task<IEnumerable<ProductShoppingCartViewModel>> GetProductsAsync(ISession session)
         {
@@ -28,30 +34,7 @@ namespace OnlineStore.Services.Quest
                 return null;
             }
 
-            var productsModels = new List<ProductShoppingCartViewModel>();
-
-            foreach (var product in productSessionModels)
-            {
-                var dbModel = await this.DbContext.Products
-                    .Include(p => p.Photos)
-                    .FirstOrDefaultAsync(p => p.Id == product.ProductId);
-
-                if (dbModel != null)
-                {
-                    var model = this.Mapper.Map<ProductShoppingCartViewModel>(dbModel);
-                    model.MainPhoto = dbModel.Photos.First();
-                    model.Count = product.Count;
-
-                    if (dbModel.PromoPrice != null)
-                    {
-                        model.Price = (int)dbModel.PromoPrice;
-                    }
-
-                    model.Price *= model.Count;
-
-                    productsModels.Add(model);
-                }
-            }
+            var productsModels = await MapProductModels(productSessionModels);
 
             return productsModels;
         }
@@ -63,19 +46,7 @@ namespace OnlineStore.Services.Quest
 
             if (dbProduct != null)
             {
-                var prodcutsInCart = GetProductFromCart(session);
-                var productIdIndex = FindProductByIndex(productId, prodcutsInCart);
-
-                if (productIdIndex < 0)
-                {
-                    var productModel = this.Mapper.Map<ProductSessionModel>(dbProduct);
-                    prodcutsInCart.Add(productModel);
-                    productIdIndex = prodcutsInCart.Count - 1;
-                }
-
-                prodcutsInCart[productIdIndex].Count++;
-
-                UpdateSession(session, prodcutsInCart);
+                AddProductToSession(dbProduct, session);
             }
         }
 
@@ -86,17 +57,7 @@ namespace OnlineStore.Services.Quest
 
             if (dbProduct != null)
             {
-                var prodcutsInCart = GetProductFromCart(session);
-                var productIndex = FindProductByIndex(model.ProductId, prodcutsInCart);
-
-                if (productIndex < 0)
-                {
-                    return;
-                }
-
-                prodcutsInCart[productIndex].Count = model.OrderQuantity;
-
-                UpdateSession(session, prodcutsInCart);
+                UpdateProductCountFromSession(model, session);
             }
         }
 
@@ -147,6 +108,69 @@ namespace OnlineStore.Services.Quest
         private void UpdateSession(ISession session, List<ProductSessionModel> prodcutsInCart)
         {
             session.SetObjectAsJson(WebConstants.SessionProductsKey, prodcutsInCart);
+        }
+
+        private async Task<List<ProductShoppingCartViewModel>> MapProductModels(
+            List<ProductSessionModel> productSessionModels)
+        {
+            var productsModels = new List<ProductShoppingCartViewModel>();
+
+            foreach (var product in productSessionModels)
+            {
+                var dbModel = await this.DbContext.Products
+                    .Include(p => p.Photos)
+                    .FirstOrDefaultAsync(p => p.Id == product.ProductId);
+
+                if (dbModel != null)
+                {
+                    var model = this.mapper.Map<ProductShoppingCartViewModel>(dbModel);
+                    model.MainPhoto = dbModel.Photos.First();
+                    model.Count = product.Count;
+
+                    if (dbModel.PromoPrice != null)
+                    {
+                        model.Price = (int)dbModel.PromoPrice;
+                    }
+
+                    model.Price *= model.Count;
+
+                    productsModels.Add(model);
+                }
+            }
+
+            return productsModels;
+        }
+
+        private void AddProductToSession(Product dbProduct, ISession session)
+        {
+            var prodcutsInCart = GetProductFromCart(session);
+            var productIdIndex = FindProductByIndex(dbProduct.Id, prodcutsInCart);
+
+            if (productIdIndex < 0)
+            {
+                var productModel = this.mapper.Map<ProductSessionModel>(dbProduct);
+                prodcutsInCart.Add(productModel);
+                productIdIndex = prodcutsInCart.Count - 1;
+            }
+
+            prodcutsInCart[productIdIndex].Count++;
+
+            UpdateSession(session, prodcutsInCart);
+        }
+
+        private void UpdateProductCountFromSession(ProductCardBindingModel model, ISession session)
+        {
+            var prodcutsInCart = GetProductFromCart(session);
+            var productIndex = FindProductByIndex(model.ProductId, prodcutsInCart);
+
+            if (productIndex < 0)
+            {
+                return;
+            }
+
+            prodcutsInCart[productIndex].Count = model.OrderQuantity;
+
+            UpdateSession(session, prodcutsInCart);
         }
     }
 }
