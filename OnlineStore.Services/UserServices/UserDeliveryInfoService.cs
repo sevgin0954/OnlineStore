@@ -175,7 +175,7 @@ namespace OnlineStore.Services.UserServices
             populatedPlaces
                 .Add(new SelectListItem()
                 {
-                    Text = ControllerConstats.FromPlaceholderPopulatedPlace,
+                    Text = ControllerConstats.SelectListPlaceholderPopulatedPlace,
                     Selected = true,
                     Disabled = true
                 });
@@ -186,7 +186,7 @@ namespace OnlineStore.Services.UserServices
             districts
                 .Add(new SelectListItem()
                 {
-                    Text = ControllerConstats.FromPlaceholderDistrict,
+                    Text = ControllerConstats.SelectListPlaceholderDistrict,
                     Selected = true,
                     Disabled = true
                 });

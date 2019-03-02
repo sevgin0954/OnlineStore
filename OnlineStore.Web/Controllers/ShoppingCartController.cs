@@ -1,9 +1,9 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using OnlineStore.Common.Constants;
 using OnlineStore.Models.WebModels.Quest.BindingModels;
 using OnlineStore.Services.Quest.Interfaces;
 using OnlineStore.Web.Areas;
-using System;
 using System.Threading.Tasks;
 
 namespace OnlineStore.Web.Controllers

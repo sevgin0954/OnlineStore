@@ -1,5 +1,4 @@
-﻿using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using OnlineStore.Common.Constants;
 using OnlineStore.Models.WebModels.Account.BindingModels;
@@ -8,7 +7,6 @@ using System.Threading.Tasks;
 
 namespace OnlineStore.Web.Areas.Identity.Controllers
 {
-    [Authorize]
     public class AccountController : BaseIdentityController
     {
         private readonly IUserProfileService userProfileService;

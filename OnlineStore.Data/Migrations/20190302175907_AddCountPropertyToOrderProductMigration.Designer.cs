@@ -3,15 +3,17 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using OnlineStore.Data;
 
 namespace OnlineStore.Data.Migrations
 {
     [DbContext(typeof(OnlineStoreDbContext))]
-    partial class OnlineStoreDbContextModelSnapshot : ModelSnapshot
+    [Migration("20190302175907_AddCountPropertyToOrderProductMigration")]
+    partial class AddCountPropertyToOrderProductMigration
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -159,7 +161,7 @@ namespace OnlineStore.Data.Migrations
 
                     b.Property<DateTime>("PostDate")
                         .ValueGeneratedOnAdd()
-                        .HasDefaultValue(new DateTime(2019, 3, 2, 21, 1, 18, 174, DateTimeKind.Local).AddTicks(6125));
+                        .HasDefaultValue(new DateTime(2019, 3, 2, 19, 59, 7, 223, DateTimeKind.Local).AddTicks(327));
 
                     b.Property<string>("ReviewId");
 
@@ -228,7 +230,7 @@ namespace OnlineStore.Data.Migrations
 
                     b.Property<DateTime>("DeliveryExpectedTime")
                         .ValueGeneratedOnAdd()
-                        .HasDefaultValue(new DateTime(2019, 3, 5, 21, 1, 18, 213, DateTimeKind.Local).AddTicks(72));
+                        .HasDefaultValue(new DateTime(2019, 3, 5, 19, 59, 7, 261, DateTimeKind.Local).AddTicks(6824));
 
                     b.Property<string>("DeliveryInfoId");
 
@@ -236,7 +238,7 @@ namespace OnlineStore.Data.Migrations
 
                     b.Property<DateTime>("OrderDate")
                         .ValueGeneratedOnAdd()
-                        .HasDefaultValue(new DateTime(2019, 3, 2, 21, 1, 18, 211, DateTimeKind.Local).AddTicks(2731));
+                        .HasDefaultValue(new DateTime(2019, 3, 2, 19, 59, 7, 260, DateTimeKind.Local).AddTicks(131));
 
                     b.Property<string>("OrderStatusId");
 
@@ -382,7 +384,7 @@ namespace OnlineStore.Data.Migrations
 
                     b.Property<DateTime>("PostDate")
                         .ValueGeneratedOnAdd()
-                        .HasDefaultValue(new DateTime(2019, 3, 2, 21, 1, 18, 250, DateTimeKind.Local).AddTicks(529));
+                        .HasDefaultValue(new DateTime(2019, 3, 2, 19, 59, 7, 293, DateTimeKind.Local).AddTicks(6078));
 
                     b.Property<string>("ProductId");
 
@@ -416,7 +418,7 @@ namespace OnlineStore.Data.Migrations
 
                     b.Property<DateTime>("PostDate")
                         .ValueGeneratedOnAdd()
-                        .HasDefaultValue(new DateTime(2019, 3, 2, 21, 1, 18, 260, DateTimeKind.Local).AddTicks(7393));
+                        .HasDefaultValue(new DateTime(2019, 3, 2, 19, 59, 7, 302, DateTimeKind.Local).AddTicks(241));
 
                     b.Property<string>("ProductId");
 
@@ -492,7 +494,7 @@ namespace OnlineStore.Data.Migrations
 
                     b.Property<DateTime>("RegisterDate")
                         .ValueGeneratedOnAdd()
-                        .HasDefaultValue(new DateTime(2019, 3, 2, 19, 1, 18, 157, DateTimeKind.Utc).AddTicks(7736));
+                        .HasDefaultValue(new DateTime(2019, 3, 2, 17, 59, 7, 211, DateTimeKind.Utc).AddTicks(6268));
 
                     b.Property<string>("SecurityStamp");
 
@@ -584,7 +586,7 @@ namespace OnlineStore.Data.Migrations
                         .WithMany("DeliveryInfos")
                         .HasForeignKey("PopulatedPlaceId");
 
-                    b.HasOne("OnlineStore.Models.User", "User")
+                    b.HasOne("OnlineStore.Models.User")
                         .WithMany("DeliveryInfos")
                         .HasForeignKey("UserId");
                 });
@@ -603,7 +605,7 @@ namespace OnlineStore.Data.Migrations
                         .WithMany("Orders")
                         .HasForeignKey("PaymentTypeId");
 
-                    b.HasOne("OnlineStore.Models.User", "User")
+                    b.HasOne("OnlineStore.Models.User")
                         .WithMany("Orders")
                         .HasForeignKey("UserId");
                 });

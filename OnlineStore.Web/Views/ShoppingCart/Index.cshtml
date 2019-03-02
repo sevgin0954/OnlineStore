@@ -1,10 +1,12 @@
 ﻿@model IEnumerable<ProductShoppingCartViewModel>
 @{
-    ViewData["Title"] = "Index";
+    ViewData["Title"] = "Shopping card";
 }
 
-<div class="account-container d-flex">
-    <div class="account-content">
+<div class="account-container">
+    @{ decimal totalPrice = 0; }
+
+    <div class="account-content d-flex flex-column">
         @if (Model == null || Model.Any() == false)
         {
             <div class="mx-auto">
@@ -15,6 +17,8 @@
         {
             foreach (var product in Model)
             {
+                totalPrice += product.Price;
+
                 <div class="account-content-inner d-flex flex-row">
                     <div id="productId" hidden>@product.Id</div>
                     <div>
@@ -43,6 +47,11 @@
                 </div>
             }
         }
+
+        <div class="ml-auto">
+            <div><h3>Total Price: @totalPrice.ToString("F")</h3></div>
+            <a asp-area="Identity" asp-controller="Order" asp-action="ChooseAddress" class="btn btn-block btn-custom-border-green">Order</a>
+        </div>
     </div>
 </div>
 
@@ -57,7 +66,6 @@
             let countNumber = $(selectListElement).val();
 
             let productId = $(selectListParent).children("#productId").text();
-            console.log(productId)
 
             ajaxUpdateProductCount(productId, countNumber);
         })

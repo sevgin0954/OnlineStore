@@ -27,7 +27,7 @@ namespace OnlineStore.Services.Quest
 
         public async Task<IEnumerable<ProductShoppingCartViewModel>> GetProductsAsync(ISession session)
         {
-            var productSessionModels = this.GetProductFromCart(session);
+            var productSessionModels = this.GetProductsFromCart(session);
 
             if (productSessionModels == null)
             {
@@ -71,7 +71,7 @@ namespace OnlineStore.Services.Quest
                 return false;
             }
 
-            var prodcutsInCart = GetProductFromCart(session);
+            var prodcutsInCart = GetProductsFromCart(session);
             var productIndex = FindProductByIndex(productId, prodcutsInCart);
 
             if (productIndex < 0)
@@ -86,11 +86,10 @@ namespace OnlineStore.Services.Quest
             return true;
         }
 
-        private List<ProductSessionModel> GetProductFromCart(ISession session)
+        public List<ProductSessionModel> GetProductsFromCart(ISession session)
         {
             var prodcutsInCart =
                     session.GetObjectFromJson<List<ProductSessionModel>>(WebConstants.SessionProductsKey);
-
 
             if (prodcutsInCart == null)
             {
@@ -105,13 +104,13 @@ namespace OnlineStore.Services.Quest
             return prodcutsInCart.FindIndex(p => p.ProductId == productId);
         }
 
-        private void UpdateSession(ISession session, List<ProductSessionModel> prodcutsInCart)
+        private void UpdateSession(ISession session, IList<ProductSessionModel> prodcutsInCart)
         {
             session.SetObjectAsJson(WebConstants.SessionProductsKey, prodcutsInCart);
         }
 
-        private async Task<List<ProductShoppingCartViewModel>> MapProductModels(
-            List<ProductSessionModel> productSessionModels)
+        private async Task<IList<ProductShoppingCartViewModel>> MapProductModels(
+            IList<ProductSessionModel> productSessionModels)
         {
             var productsModels = new List<ProductShoppingCartViewModel>();
 
@@ -143,7 +142,7 @@ namespace OnlineStore.Services.Quest
 
         private void AddProductToSession(Product dbProduct, ISession session)
         {
-            var prodcutsInCart = GetProductFromCart(session);
+            var prodcutsInCart = GetProductsFromCart(session);
             var productIdIndex = FindProductByIndex(dbProduct.Id, prodcutsInCart);
 
             if (productIdIndex < 0)
@@ -160,7 +159,7 @@ namespace OnlineStore.Services.Quest
 
         private void UpdateProductCountFromSession(ProductCardBindingModel model, ISession session)
         {
-            var prodcutsInCart = GetProductFromCart(session);
+            var prodcutsInCart = GetProductsFromCart(session);
             var productIndex = FindProductByIndex(model.ProductId, prodcutsInCart);
 
             if (productIndex < 0)

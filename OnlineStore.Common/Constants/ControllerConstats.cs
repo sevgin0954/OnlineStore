@@ -8,9 +8,11 @@
 
         //------------------------------------------------------------------------------------
 
-        public const string FromPlaceholderDistrict = "Choose district";
+        public const string SelectListPlaceholderDistrict = "Choose district";
 
-        public const string FromPlaceholderPopulatedPlace = "Choose populated place";
+        public const string SelectListPlaceholderPopulatedPlace = "Choose populated place";
+
+        public const string SelectListPlaceholderPaymentType = "Choose payment type";
 
         //------------------------------------------------------------------------------------
 
@@ -27,6 +29,8 @@
         public const string ErrorMessageWrongPictureFormat = "Only.jpeg allowed !!!";
 
         public const string ErrorMessageMaxSize = "Max size ~1mb !!!";
+
+        public const string ErrorMessageNoProductsInCart = "No products in card !!!";
 
         //------------------------------------------------------------------------------------
 
@@ -49,6 +53,8 @@
         public const string MessageSuccefullyDeleted = "Succesfully deleted";
 
         public const string MessageSuccefullyRemoved = "Succesfully removed";
+
+        public const string MessageSuccefullyOrdered = "Succesfully ordered";
 
         //------------------------------------------------------------------------------------
 

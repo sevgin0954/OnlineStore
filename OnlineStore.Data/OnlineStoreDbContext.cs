@@ -12,8 +12,6 @@ namespace OnlineStore.Data
 
         public DbSet<DeliveryInfo> DeliverysInfos { get; set; }
 
-        public DbSet<DeliveryType> DeliverysTypes { get; set; }
-
         public DbSet<District> Districts { get; set; }
 
         public DbSet<PopulatedPlace> PopulatedPlaces { get; set; }
@@ -53,6 +51,26 @@ namespace OnlineStore.Data
 
                 user.HasOne(u => u.ProfilePicture)
                     .WithOne(p => p.User);
+
+                user.HasMany(u => u.Orders)
+                    .WithOne(o => o.User)
+                    .HasForeignKey(o => o.UserId);
+
+                user.HasMany(u => u.DeliveryInfos)
+                    .WithOne(di => di.User)
+                    .HasForeignKey(di => di.UserId);
+
+                user.HasMany(u => u.Reviews)
+                    .WithOne(r => r.User)
+                    .HasForeignKey(r => r.UserId);
+
+                user.HasMany(u => u.Questions)
+                    .WithOne(q => q.User)
+                    .HasForeignKey(q => q.UserId);
+
+                user.HasMany(u => u.Comments)
+                    .WithOne(c => c.User)
+                    .HasForeignKey(c => c.UserId);
             });
 
             builder.Entity<Comment>(comment =>
@@ -118,15 +136,6 @@ namespace OnlineStore.Data
                     .HasForeignKey(di => di.PopulatedPlaceId);
             });
 
-            builder.Entity<DeliveryType>(deliveryType =>
-            {
-                deliveryType.HasKey(dt => dt.Id);
-
-                deliveryType.HasMany(di => di.Orders)
-                    .WithOne(o => o.DeliveryType)
-                    .HasForeignKey(o => o.DeliveryTypeId);
-            });
-
             builder.Entity<District>(district =>
             {
                 district.HasKey(d => d.Id);
@@ -157,6 +166,9 @@ namespace OnlineStore.Data
             builder.Entity<OrderProduct>(orderProduct =>
             {
                 orderProduct.HasKey(op => new { op.OrderId, op.ProductId });
+
+                orderProduct.Property(op => op.Count)
+                    .IsRequired();
             });
 
             builder.Entity<Order>(order =>
@@ -189,13 +201,13 @@ namespace OnlineStore.Data
                     .WithMany(di => di.Orders)
                     .HasForeignKey(o => o.DeliveryInfoId);
 
-                order.HasOne(o => o.DeliveryType)
-                    .WithMany(dt => dt.Orders)
-                    .HasForeignKey(o => o.DeliveryTypeId);
-
                 order.HasOne(o => o.OrderStatus)
                     .WithMany(os => os.Orders)
                     .HasForeignKey(o => o.OrderStatusId);
+
+                order.HasOne(o => o.User)
+                    .WithMany(u => u.Orders)
+                    .HasForeignKey(o => o.UserId);
             });
 
             builder.Entity<OrderStatus>(orderStatus =>

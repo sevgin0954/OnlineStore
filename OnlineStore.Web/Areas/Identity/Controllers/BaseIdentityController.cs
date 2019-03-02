@@ -1,9 +1,11 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using OnlineStore.Common.Constants;
 
 namespace OnlineStore.Web.Areas.Identity.Controllers
 {
     [Area(WebConstants.IdentityArea)]
+    [Authorize]
     public abstract class BaseIdentityController : BaseController
     {
         

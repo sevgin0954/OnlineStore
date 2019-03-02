@@ -160,6 +160,9 @@ namespace OnlineStore.Web
 
             services.AddScoped<IShoppingCartService, ShoppingCartService>();
 
+            services.AddScoped<IUserOrderService, UserOrderService>();
+
+
             services.AddSingleton<IEmailSender, EmailSender>();
         }
     }

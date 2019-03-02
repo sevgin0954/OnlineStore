@@ -23,10 +23,10 @@ namespace OnlineStore.Models
         public string DeliveryInfoId { get; set; }
         public DeliveryInfo DeliveryInfo { get; set; }
 
-        public string DeliveryTypeId { get; set; }
-        public DeliveryType DeliveryType { get; set; }
-
         public string OrderStatusId { get; set; }
         public OrderStatus OrderStatus { get; set; }
+
+        public string UserId { get; set; }
+        public User User { get; set; }
     }
 }

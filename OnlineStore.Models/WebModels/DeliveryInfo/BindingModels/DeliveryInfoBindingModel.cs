@@ -24,14 +24,12 @@ namespace OnlineStore.Models.WebModels.DeliveryInfo.BindingModels
         public string Address { get; set; }
 
         [Display(Name = "District")]
-        //public string SelectedDistrictName { get; set; }
         public ICollection<SelectListItem> AllDistricts { get; set; }
 
         [Required]
         public string SelectedDistrictId { get; set; }
 
         [Display(Name = "Populated Place")]
-        //public string SelectedPopulatedPlaceName { get; set; }
         public ICollection<SelectListItem> AllPopulatedPlaces { get; set; }
 
         [Required]

@@ -3,10 +3,10 @@
     ViewData["Title"] = "Products";
 }
 
-<div class="d-flex row">
+<div class="d-flex flex-row flex-wrap">
     @foreach (var productModel in Model)
     {
-        <div class="product-content-inner col-md-4 col-xl-3">
+        <div class="product-content-inner">
             <img width="139" height="149" src="data:image/png;base64,@System.Convert.ToBase64String(@productModel.MainPhoto)" />
             <div>
                 @for (int starCount = 1; starCount <= 5; starCount++)

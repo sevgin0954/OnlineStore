@@ -12,16 +12,21 @@ namespace OnlineStore.Services.Extensions
 {
     public class ApplicationBuilderSeedDbService : BaseService, IApplicationBuilderSeedDbService
     {
+        private readonly IList<string> paymentsTypesNames;
+        private readonly IList<string> orderStatusesNames;
         private readonly IDictionary<string, string[]> districtsNamesPopulatedPlacesNames;
-        private readonly IdentityRole[] roles = new IdentityRole[]
-        {
-            new IdentityRole(WebConstants.AdminRole)
-        };
+        private readonly IList<string> rolesNames;
 
-        public ApplicationBuilderSeedDbService(OnlineStoreDbContext dbContext, RoleManager<IdentityRole> roleManager)
+        public ApplicationBuilderSeedDbService(OnlineStoreDbContext dbContext)
             : base(dbContext)
         {
+            this.paymentsTypesNames = new List<string>();
+
+            this.orderStatusesNames = new List<string>();
+
             this.districtsNamesPopulatedPlacesNames = new Dictionary<string, string[]>();
+
+            this.rolesNames = new List<string>();
 
             SeedInitialData();
         }
@@ -33,6 +38,10 @@ namespace OnlineStore.Services.Extensions
             SeedRolesAsync(roleManager).Wait();
 
             SeedAdminAsync(userManager, roleManager).Wait();
+
+            SeedPaymentTypes();
+
+            SeedOrderStatuses();
         }
 
         private void SeedInitialData()
@@ -42,22 +51,29 @@ namespace OnlineStore.Services.Extensions
 
             this.districtsNamesPopulatedPlacesNames["София"] =
                 new string[] { "Алдомировци (Сливница)", "Априлово (Горна Малина)", "Банчовци (Ихтиман)" };
+
+            this.paymentsTypesNames.Add("Cash on delivery");
+
+            this.orderStatusesNames.Add(WebConstants.InitialOrderStatus);
+
+            this.rolesNames.Add(WebConstants.AdminRole);
         }
 
         private void SeedDistricts()
         {
-            var dbDistricts = this.DbContext.Districts;
+            var dbDistricts = this.DbContext.Districts
+                .Include(d => d.PopulatedPlaces)
+                .ToArray();
 
             foreach (var districtName in districtsNamesPopulatedPlacesNames.Keys)
             {
                 var ditrict = dbDistricts
-                    .Include(d => d.PopulatedPlaces)
                     .FirstOrDefault(d => d.Name == districtName);
 
                 if (ditrict == null)
                 {
                     ditrict = new District() { Name = districtName };
-                    dbDistricts.Add(ditrict);
+                    this.DbContext.Districts.Add(ditrict);
 
                     SeedPopulatedPlace(ditrict);
                 }
@@ -85,12 +101,15 @@ namespace OnlineStore.Services.Extensions
 
         private async Task SeedRolesAsync(RoleManager<IdentityRole> roleManager)
         {
-            foreach (var role in roles)
+            foreach (var roleName in rolesNames)
             {
-                string roleName = role.Name;
-
                 if (await roleManager.RoleExistsAsync(roleName) == false)
                 {
+                    var role = new IdentityRole()
+                    {
+                        Name = roleName
+                    };
+
                     await roleManager.CreateAsync(role);
                 }
             }
@@ -98,11 +117,12 @@ namespace OnlineStore.Services.Extensions
 
         private async Task SeedAdminAsync(UserManager<User> userManager, RoleManager<IdentityRole> roleManager)
         {
-            var usersRoles = this.DbContext.UserRoles.ToArray();
+            var usersRoles = this.DbContext.UserRoles
+                .ToArray();
 
-            var adminRoleId = await roleManager.GetRoleIdAsync(this.roles[0]);
+            var adminRole = await roleManager.FindByNameAsync(this.rolesNames[0]);
 
-            if (usersRoles.Any(ur => ur.RoleId == adminRoleId) == false)
+            if (usersRoles.Any(ur => ur.RoleId == adminRole.Id) == false)
             {
                 var dbAdmin = new User()
                 {
@@ -111,8 +131,50 @@ namespace OnlineStore.Services.Extensions
                 };
 
                 await userManager.CreateAsync(dbAdmin, WebConstants.DefaultAdminPassword);
-                await userManager.AddToRoleAsync(dbAdmin, roles[0].Name);
+                await userManager.AddToRoleAsync(dbAdmin, adminRole.Name);
             }
+        }
+
+        private void SeedPaymentTypes()
+        {
+            var dbPaymentTypes = this.DbContext.PaymentTypes
+                .ToArray();
+
+            foreach (var paymentTypeName in this.paymentsTypesNames)
+            {
+                if (dbPaymentTypes.Any(pt => pt.Name == paymentTypeName) == false)
+                {
+                    var dbPaymentType = new PaymentType()
+                    {
+                        Name = paymentTypeName
+                    };
+
+                    this.DbContext.PaymentTypes.Add(dbPaymentType);
+                }
+            }
+
+            this.DbContext.SaveChanges();
+        }
+
+        private void SeedOrderStatuses()
+        {
+            var dbOrderStatuses = this.DbContext.OrdersStatuses
+                .ToArray();
+
+            foreach (var orderStatusName in this.orderStatusesNames)
+            {
+                if (dbOrderStatuses.Any(os => os.Name == orderStatusName) == false)
+                {
+                    var dbOrderStatus = new OrderStatus()
+                    {
+                        Name = orderStatusName
+                    };
+
+                    this.DbContext.OrdersStatuses.Add(dbOrderStatus);
+                }
+            }
+
+            this.DbContext.SaveChanges();
         }
     }
 }

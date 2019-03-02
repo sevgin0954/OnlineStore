@@ -3,12 +3,14 @@ using OnlineStore.Models;
 using OnlineStore.Models.WebModels.Account.BindingModels;
 using OnlineStore.Models.WebModels.Admin.BindingModels;
 using OnlineStore.Models.WebModels.Admin.ViewModels;
-using OnlineStore.Models.WebModels.DeliveryInfo.BindingModels;
+using DeliveryInfoBinding = OnlineStore.Models.WebModels.DeliveryInfo.BindingModels;
 using OnlineStore.Models.WebModels.DeliveryInfo.ViewModels;
 using OnlineStore.Models.WebModels.Quest.ViewModels;
 using OnlineStore.Models.WebModels.Session;
 using Quest = OnlineStore.Models.WebModels.Quest.ViewModels;
+using OrderBindingModels = OnlineStore.Models.WebModels.OrderModels.BindingModels;
 using Security = OnlineStore.Models.WebModels.Security.ViewModels;
+using OnlineStore.Models.WebModels.OrderModels.BindingModels;
 
 namespace OnlineStore.Web.Mapping
 {
@@ -19,18 +21,25 @@ namespace OnlineStore.Web.Mapping
             this.CreateMap<DeliveryInfo, DeliveryInfoViewModel>()
                 .ReverseMap();
 
-            this.CreateMap<DeliveryInfoBindingModel, DeliveryInfo>()
+            this.CreateMap<DeliveryInfoBinding.DeliveryInfoBindingModel, DeliveryInfo>()
                 .ForMember(dest => dest.DistrictId, opt => opt.MapFrom(src => src.SelectedDistrictId))
                 .ForMember(dest => dest.PopulatedPlaceId, opt => opt.MapFrom(src => src.SelectedPopulatedPlaceId))
                 .ReverseMap();
 
-            this.CreateMap<PersonInfoBindingModel, User>()
-                .ReverseMap();
+            this.CreateMap<DeliveryInfo, OrderBindingModels.DeliveryInfoBindingModel>()
+                .ForMember(dest => dest.SelectedDistrictName, opt => opt.MapFrom(src => src.District.Name))
+                .ForMember(dest => dest.SelectedPopulatedName, opt => opt.MapFrom(src => src.PopulatedPlace.Name));
 
-            this.CreateMap<User, Security.IndexViewModel>();
+            //--------------------------------------------------------------------------------------------------------
 
             this.CreateMap<Category, CategoryViewModel>()
                 .ForMember(dest => dest.CategoryId, opt => opt.MapFrom(src => src.Id));
+
+            this.CreateMap<SubCategory, ProductBindingModel>()
+                .ForMember(dest => dest.SubCategoryName, opt => opt.MapFrom(src => src.Name))
+                .ForMember(dest => dest.Photos, opt => opt.Ignore());
+
+            //--------------------------------------------------------------------------------------------------------
 
             this.CreateMap<ProductBindingModel, Product>()
                 .ForMember(dest => dest.Photos, opt => opt.Ignore())
@@ -47,12 +56,19 @@ namespace OnlineStore.Web.Mapping
             this.CreateMap<Product, ProductSessionModel>()
                 .ForMember(dest => dest.ProductId, opt => opt.MapFrom(src => src.Id));
 
+            this.CreateMap<Product, ProductConciseBindingModel>()
+                .ForMember(dest => dest.MainPhoto, opt => opt.Ignore())
+                .ForMember(dest => dest.ProductId, opt => opt.MapFrom(src => src.Id));
+
+            //--------------------------------------------------------------------------------------------------------
+
             this.CreateMap<User, UsersViewModel>()
                 .ForMember(dest => dest.OrdersCount, opt => opt.MapFrom(src => src.Orders.Count));
 
-            this.CreateMap<SubCategory, ProductBindingModel>()
-                .ForMember(dest => dest.SubCategoryName, opt => opt.MapFrom(src => src.Name))
-                .ForMember(dest => dest.Photos, opt => opt.Ignore());
+            this.CreateMap<PersonInfoBindingModel, User>()
+                .ReverseMap();
+
+            this.CreateMap<User, Security.IndexViewModel>();
         }
     }
 }

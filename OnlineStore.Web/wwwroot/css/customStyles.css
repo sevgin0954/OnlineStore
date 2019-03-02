@@ -86,6 +86,21 @@
     color: #000000;
 }
 
+.btn-custom-border-green {
+    background-color: #ffffff;
+    outline: none !important;
+    box-shadow: none !important;
+    border: 3px solid;
+    border-radius: 5px;
+    border-color: #7CFC81;
+    color: #000000;
+}
+
+.btn-custom-border-green:hover, .btn-custom-border-green:active, .btn-custom-border-green:focus {
+    background-color: #7CFC81;
+    color: #000000;
+}
+
 .btn-custom:hover, .btn-custom:active, .btn-custom:focus {
     background-color: #ebf5ff;
     color: #000000;
@@ -169,6 +184,14 @@
 .profile-image {
     width: 98px;
     height: 98px;
+    padding: 0.1rem;
+    border: 1px solid #dee2e6;
+    border-radius: 0.25rem;
+}
+
+.product-small-image {
+    width: 60px;
+    height: 60px;
     padding: 0.1rem;
     border: 1px solid #dee2e6;
     border-radius: 0.25rem;

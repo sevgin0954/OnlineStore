@@ -7,7 +7,6 @@ using System.Threading.Tasks;
 
 namespace OnlineStore.Web.Areas.Identity.Controllers
 {
-    [Authorize]
     public class DeliveryInfoController : BaseIdentityController
     {
         private readonly IUserDeliveryInfoService userDeliveryInfoService;

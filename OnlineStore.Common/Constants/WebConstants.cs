@@ -22,8 +22,14 @@
 
         public const string SessionProductsKey = "ProductsSessionKey";
 
+        public const string InitialOrderStatus = "On the way";
+
         public const int BanUserDays = 365;
 
         public const int SessionIdleTimeoutDays = 10;
+
+        public const int DeliveryRequiredDays = 2;
+
+        public const decimal DeliveryPrice = 5;
     }
 }
