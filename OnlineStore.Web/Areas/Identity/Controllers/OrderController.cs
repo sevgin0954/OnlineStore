@@ -18,30 +18,43 @@ namespace OnlineStore.Web.Areas.Identity.Controllers
         [HttpGet]
         public async Task<IActionResult> ChooseAddress()
         {
-            var model = await this.userOrderService.PrepareModelForChoosingAddressAsync(this.HttpContext.Session, this.User);
+            var model = await this.userOrderService
+                .PrepareModelForChoosingAddressAsync(this.HttpContext.Session, this.User);
 
             if (model == null)
             {
                 this.AddStatusMessage(ControllerConstats.ErrorMessageNoProductsInCart, ControllerConstats.MessageTypeDanger);
-                return this.Redirect("/ShoppingCart");
             }
 
             return this.View(model);
         }
 
         [HttpPost]
-        public async Task<IActionResult> ChooseAddress(string deliveryInfoId)
+        public IActionResult ChooseAddress(string deliveryInfoId)
         {
-            var model = await this.userOrderService.PrepareModelForOrdering(this.HttpContext.Session, deliveryInfoId);
+            if (deliveryInfoId == null)
+            {
+                this.AddStatusMessage(ControllerConstats.ErrorMessageWrongId, ControllerConstats.MessageTypeDanger);
+                return this.Redirect("/ShoppingCart");
+            }
+
+            return this.RedirectToAction("Order", new { deliveryInfoId });
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> Order(string deliveryInfoId)
+        {
+            var model = 
+                await this.userOrderService.PrepareModelForOrdering(this.User, this.HttpContext.Session, deliveryInfoId);
 
             if (model == null)
             {
                 this.AddStatusMessage(ControllerConstats.ErrorMessageUnknownError, ControllerConstats.MessageTypeDanger);
 
-                return this.RedirectToAction("ChooseAddress");
+                return this.RedirectToAction("/ShoppingCart");
             }
 
-            return this.View("ReviewOrder", model);
+            return this.View(model);
         }
 
         [HttpPost]

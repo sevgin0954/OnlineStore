@@ -26,6 +26,21 @@ namespace OnlineStore.Web.Controllers
         }
 
         [HttpPost]
+        public async Task<IActionResult> IndexPost()
+        {
+            var model = await this.shoppingCartService.GetProductsAsync(this.HttpContext.Session);
+
+            if (model == null)
+            {
+                this.AddStatusMessage(ControllerConstats.ErrorMessageNoProductsInCart, ControllerConstats.MessageTypeDanger);
+
+                return this.RedirectToAction("Index");
+            }
+
+            return this.Redirect("/Identity/Order/ChooseAddress");
+        }
+
+        [HttpPost]
         public async Task AddProduct(string productId)
         {
             await this.shoppingCartService.AddProductAsync(productId, this.HttpContext.Session);

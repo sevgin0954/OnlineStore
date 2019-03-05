@@ -29,7 +29,7 @@ namespace OnlineStore.Services.Quest
         {
             var productSessionModels = this.GetProductsFromCart(session);
 
-            if (productSessionModels == null)
+            if (productSessionModels.Count == 0)
             {
                 return null;
             }

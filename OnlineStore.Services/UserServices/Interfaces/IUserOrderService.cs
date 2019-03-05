@@ -10,7 +10,7 @@ namespace OnlineStore.Services.UserServices.Interfaces
     {
         Task<IEnumerable<DeliveryInfoBindingModel>> PrepareModelForChoosingAddressAsync(ISession session, ClaimsPrincipal user);
 
-        Task<OrderBidningModel> PrepareModelForOrdering(ISession session, string deliveryInfoId);
+        Task<OrderBidningModel> PrepareModelForOrdering(ClaimsPrincipal user, ISession session, string deliveryInfoId);
 
         Task<bool> CreateOrder(OrderBidningModel model, ClaimsPrincipal user, ISession session);
     }

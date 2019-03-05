@@ -50,7 +50,11 @@
 
         <div class="ml-auto">
             <div><h3>Total Price: @totalPrice.ToString("F")</h3></div>
-            <a asp-area="Identity" asp-controller="Order" asp-action="ChooseAddress" class="btn btn-block btn-custom-border-green">Order</a>
+            <form asp-controller="ShoppingCart" asp-action="IndexPost" method="post">
+                <button class="btn btn-block btn-custom-border-green" type="submit">
+                    Order
+                </button>
+            </form>
         </div>
     </div>
 </div>

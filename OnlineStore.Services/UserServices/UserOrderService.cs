@@ -54,7 +54,10 @@ namespace OnlineStore.Services.UserServices
             return models;
         }
 
-        public async Task<OrderBidningModel> PrepareModelForOrdering(ISession session, string deliveryInfoId)
+        public async Task<OrderBidningModel> PrepareModelForOrdering(
+            ClaimsPrincipal user, 
+            ISession session, 
+            string deliveryInfoId)
         {
             var productsModels = this.shoppingCartService.GetProductsFromCart(session);
 
@@ -64,12 +67,13 @@ namespace OnlineStore.Services.UserServices
             }
 
             var dbDeliveryInfo = await GetDeliveryInfoFromDatabaseAsync(deliveryInfoId);
+            var isDeliveryInfoValid = this.ValidateDeliveryInfo(user, dbDeliveryInfo);
 
-            if (dbDeliveryInfo == null)
+            if (isDeliveryInfoValid == false)
             {
                 return null;
             }
-
+            
             var model = await MapOrderAsync(productsModels, dbDeliveryInfo);
 
             return model;
@@ -121,6 +125,20 @@ namespace OnlineStore.Services.UserServices
                    .FirstOrDefaultAsync(di => di.Id == deliveryInfoId);
 
             return dbDeliveryInfo;
+        }
+
+        private bool ValidateDeliveryInfo(ClaimsPrincipal user, DeliveryInfo dbDeliveryInfo)
+        {
+            var dbUserId = this.userManager.GetUserId(user);
+
+            if (dbDeliveryInfo == null || dbDeliveryInfo.UserId != dbUserId)
+            {
+                return false;
+            }
+            else
+            {
+                return true;
+            }
         }
 
         private async Task<OrderBidningModel> MapOrderAsync(IEnumerable<ProductSessionModel> products, DeliveryInfo deliveryInfo)
@@ -234,6 +252,11 @@ namespace OnlineStore.Services.UserServices
 
         private async Task<bool> ValidateProducts(IList<ProductConciseBindingModel> products)
         {
+            if (products.Count == 0)
+            {
+                return false;
+            }
+
             foreach (var productModel in products)
             {
                 var dbProduct = await this.DbContext.Products
