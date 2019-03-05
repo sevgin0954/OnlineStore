@@ -28,6 +28,8 @@
 
         public const int SessionIdleTimeoutDays = 10;
 
+        public const int ExpiredItemsDeletionIntervalHours = 1;
+
         public const int DeliveryRequiredDays = 2;
 
         public const decimal DeliveryPrice = 5;

@@ -58,6 +58,7 @@ namespace OnlineStore.Web
                 .AddCookie(options =>
                 {
                     options.ExpireTimeSpan = TimeSpan.FromDays(WebConstants.SessionIdleTimeoutDays);
+                    options.Cookie.HttpOnly = true;
                 })
                 .AddFacebook(options => 
                 {
@@ -97,10 +98,21 @@ namespace OnlineStore.Web
 
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
 
+            services.AddDistributedSqlServerCache(options =>
+            {
+                options.ConnectionString =
+                    this.Configuration.GetSection("ConnectionStrings:OnlineStoreDbContextConnection").Value;
+
+                options.SchemaName = "dbo";
+                options.TableName = "CacheData";
+                options.ExpiredItemsDeletionInterval = TimeSpan.FromHours(WebConstants.ExpiredItemsDeletionIntervalHours);
+                options.DefaultSlidingExpiration = TimeSpan.FromDays(WebConstants.SessionIdleTimeoutDays);
+            });
             services.AddSession(options =>
             {
                 options.IdleTimeout = TimeSpan.FromDays(WebConstants.SessionIdleTimeoutDays);
                 options.Cookie.IsEssential = true;
+                options.Cookie.HttpOnly = true;
             });
         }
 
@@ -119,6 +131,7 @@ namespace OnlineStore.Web
                 app.UseHsts();
             }
 
+            app.UseHttpsRedirection();
             app.UseHttpsRedirection();
             app.UseStaticFiles();
             app.UseCookiePolicy();
