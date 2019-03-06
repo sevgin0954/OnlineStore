@@ -11,6 +11,7 @@ using Quest = OnlineStore.Models.WebModels.Quest.ViewModels;
 using OrderBindingModels = OnlineStore.Models.WebModels.OrderModels.BindingModels;
 using Security = OnlineStore.Models.WebModels.Security.ViewModels;
 using OnlineStore.Models.WebModels.OrderModels.BindingModels;
+using System.Linq;
 
 namespace OnlineStore.Web.Mapping
 {
@@ -59,6 +60,9 @@ namespace OnlineStore.Web.Mapping
             this.CreateMap<Product, ProductConciseBindingModel>()
                 .ForMember(dest => dest.MainPhoto, opt => opt.Ignore())
                 .ForMember(dest => dest.ProductId, opt => opt.MapFrom(src => src.Id));
+
+            this.CreateMap<Product, ProductViewModel>()
+                .ForMember(dest => dest.OrdersCount, opt => opt.MapFrom(src => src.Orders.Sum(o => o.Count)));
 
             //--------------------------------------------------------------------------------------------------------
 

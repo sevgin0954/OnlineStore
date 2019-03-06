@@ -54,6 +54,11 @@ namespace OnlineStore.Web
                 .AddDefaultUI(UIFramework.Bootstrap4)
                 .AddEntityFrameworkStores<OnlineStoreDbContext>();
 
+            services.AddResponseCompression(options =>
+            {
+                options.EnableForHttps = true;
+            });
+
             services.AddAuthentication()
                 .AddCookie(options =>
                 {
@@ -136,6 +141,8 @@ namespace OnlineStore.Web
             app.UseStaticFiles();
             app.UseCookiePolicy();
             app.UseSession();
+
+            app.UseResponseCompression();
 
             app.UseAuthentication();
 
