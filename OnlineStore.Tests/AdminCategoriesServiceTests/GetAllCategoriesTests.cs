@@ -28,16 +28,16 @@ namespace OnlineStore.Tests.AdminCategoriesServiceTests
 
                 var service = new AdminCategoriesService(dbContext, mapper);
 
-                var categories = service.GetAllCategories();
+                var categoriesCount = service.GetAllCategories().Count;
 
-                Assert.Equal(1, categories.Count);
+                Assert.Equal(1, categoriesCount);
             }
         }
 
         [Fact]
-        public void GetAllCategories_ShouldReturnZero()
+        public void GetAllCategories_ShouldReturnZeroCategoriesCount()
         {
-            var dbContextOptions = this.InitializeDbContextOptions("GetAllCategories_ShouldReturnZero");
+            var dbContextOptions = this.InitializeDbContextOptions("GetAllCategories_ShouldReturnZeroCategoriesCount");
             var mapper = this.InitializeAutoMapper();
 
             using (var dbContext = new OnlineStoreDbContext(dbContextOptions))
@@ -80,14 +80,14 @@ namespace OnlineStore.Tests.AdminCategoriesServiceTests
 
             using (var dbContext = new OnlineStoreDbContext(dbContextOptions))
             {
-                var dbCategory = new Category();
-                dbCategory.Name = categoryName;
-                dbContext.Categories.Add(dbCategory);
+                var category = new Category();
+                category.Name = categoryName;
+                dbContext.Categories.Add(category);
                 dbContext.SaveChanges();
 
                 var service = new AdminCategoriesService(dbContext, mapper);
 
-                var modelCategoryName = dbCategory.Name;
+                var modelCategoryName = category.Name;
 
                 Assert.Equal(categoryName, modelCategoryName);
             }
@@ -101,16 +101,14 @@ namespace OnlineStore.Tests.AdminCategoriesServiceTests
 
             using (var dbContext = new OnlineStoreDbContext(dbContextOptions))
             {
+                var category = new Category();
                 var product = new Product();
                 var product2 = new Product();
-                var category = new Category();
                 var subCategory = new SubCategory();
-
-                category.SubCategories.Add(subCategory);
 
                 subCategory.Products.Add(product);
                 subCategory.Products.Add(product2);
-
+                category.SubCategories.Add(subCategory);
                 dbContext.Categories.Add(category);
                 dbContext.SaveChanges();
 
@@ -120,6 +118,56 @@ namespace OnlineStore.Tests.AdminCategoriesServiceTests
                 var productCount = categories[0].TotalProductsCount;
 
                 Assert.Equal(2, productCount);
+            }
+        }
+
+        [Fact]
+        public void GetAllCategories_ShouldReturnCorrectSubCategoriesCount()
+        {
+            var dbContextOptions = this.InitializeDbContextOptions("GetAllCategories_ShouldReturnCorrectSubCategoriesCount");
+            var mapper = this.InitializeAutoMapper();
+
+            using (var dbContext = new OnlineStoreDbContext(dbContextOptions))
+            {
+                var dbCategory = new Category();
+                var subCategory1 = new SubCategory();
+                var subCategory2 = new SubCategory();
+
+                dbCategory.SubCategories.Add(subCategory1);
+                dbCategory.SubCategories.Add(subCategory2);
+
+                dbContext.Categories.Add(dbCategory);
+                dbContext.SaveChanges();
+
+                var service = new AdminCategoriesService(dbContext, mapper);
+
+                var modelCategory = service.GetAllCategories().First();
+                var subcategoriesCount = modelCategory.SubCategories.Count;
+
+                Assert.Equal(2, subcategoriesCount);
+            }
+        }
+
+        [Fact]
+        public void GetAllCategories_ShouldReturnCorrectSubCategoryId()
+        {
+            var dbContextOptions = this.InitializeDbContextOptions("GetAllCategories_ShouldReturnCorrectSubCategoryId");
+            var mapper = this.InitializeAutoMapper();
+
+            using (var dbContext = new OnlineStoreDbContext(dbContextOptions))
+            {
+                var dbCategory = new Category();
+                var dbSubCategory = new SubCategory();
+
+                dbCategory.SubCategories.Add(dbSubCategory);
+                dbContext.Categories.Add(dbCategory);
+                dbContext.SaveChanges();
+
+                var service = new AdminCategoriesService(dbContext, mapper);
+                var modelCategory = service.GetAllCategories().First();
+                var modelSubCategoryId = modelCategory.SubCategories.First().Id;
+
+                Assert.Equal(dbSubCategory.Id, modelSubCategoryId);
             }
         }
 
