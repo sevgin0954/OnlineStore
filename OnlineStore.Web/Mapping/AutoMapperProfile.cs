@@ -12,6 +12,7 @@ using OrderBindingModels = OnlineStore.Models.WebModels.OrderModels.BindingModel
 using Security = OnlineStore.Models.WebModels.Security.ViewModels;
 using OnlineStore.Models.WebModels.OrderModels.BindingModels;
 using System.Linq;
+using OnlineStore.Models.WebModels.OrderModels.ViewModels;
 
 namespace OnlineStore.Web.Mapping
 {
@@ -73,6 +74,11 @@ namespace OnlineStore.Web.Mapping
                 .ReverseMap();
 
             this.CreateMap<User, Security.IndexViewModel>();
+
+            //---------------------------------------------------------------------------------------------------------
+
+            this.CreateMap<Order, MyOrderConciseViewModel>()
+                .ForMember(dest => dest.OrderStatusName, opt => opt.MapFrom(src => src.OrderStatus.Name));
         }
     }
 }
