@@ -13,7 +13,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OnlineStore.Common", "Onlin
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OnlineStore.Services", "OnlineStore.Services\OnlineStore.Services.csproj", "{96DC84BE-5283-4828-8E32-B8E7055306DF}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OnlineStore.Tests", "OnlineStore.Tests\OnlineStore.Tests.csproj", "{41612703-31F8-425C-90F9-0B70CBB92A24}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OnlineStore.Services.Tests", "OnlineStore.Tests\OnlineStore.Services.Tests.csproj", "{41612703-31F8-425C-90F9-0B70CBB92A24}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

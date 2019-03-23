@@ -7,14 +7,14 @@ using OnlineStore.Web.Mapping;
 using System.Linq;
 using Xunit;
 
-namespace OnlineStore.Tests.AdminCategoriesServiceTests
+namespace OnlineStore.Services.Tests.AdminTests.AdminCategoriesServiceTests
 {
     public class GetAllCategoriesTests
     {
         [Fact]
-        public void GetAllCategories_ShouldReturnCorrectCategoriesCount()
+        public void WithOneCategory_ShouldReturnCorrectCategoriesCount()
         {
-            var dbContextOptions = this.InitializeDbContextOptions("GetAllCategories_ShouldReturnCorrectCategoriesCount");
+            var dbContextOptions = this.InitializeDbContextOptions("WithOneCategory_ShouldReturnCorrectCategoriesCount");
             var mapper = this.InitializeAutoMapper();
 
             using (var dbContext = new OnlineStoreDbContext(dbContextOptions))
@@ -35,9 +35,9 @@ namespace OnlineStore.Tests.AdminCategoriesServiceTests
         }
 
         [Fact]
-        public void GetAllCategories_ShouldReturnZeroCategoriesCount()
+        public void WithoutCategories_ShouldReturnZeroCategoriesCount()
         {
-            var dbContextOptions = this.InitializeDbContextOptions("GetAllCategories_ShouldReturnZeroCategoriesCount");
+            var dbContextOptions = this.InitializeDbContextOptions("WithoutCategories_ShouldReturnZeroCategoriesCount");
             var mapper = this.InitializeAutoMapper();
 
             using (var dbContext = new OnlineStoreDbContext(dbContextOptions))
@@ -51,9 +51,9 @@ namespace OnlineStore.Tests.AdminCategoriesServiceTests
         }
 
         [Fact]
-        public void GetAllCategories_ShouldReturnCorrectCategoryId()
+        public void WithOneCategoryWithCorrectId_ShouldReturnCorrectCategoryId()
         {
-            var dbContextOptions = this.InitializeDbContextOptions("GetAllCategories_ShouldReturnCorrectCategoryId");
+            var dbContextOptions = this.InitializeDbContextOptions("WithOneCategoryWithCorrectId_ShouldReturnCorrectCategoryId");
             var mapper = this.InitializeAutoMapper();
 
             using (var dbContext = new OnlineStoreDbContext(dbContextOptions))
@@ -72,9 +72,9 @@ namespace OnlineStore.Tests.AdminCategoriesServiceTests
         }
 
         [Fact]
-        public void GetAllCategories_ShouldReturnCorrectCategoryName()
+        public void WithOneCategoryWithCorrectName_ShouldReturnCorrectCategoryName()
         {
-            var dbContextOptions = this.InitializeDbContextOptions("GetAllCategories_ShouldReturnCorrectCategoryName");
+            var dbContextOptions = this.InitializeDbContextOptions("WithOneCategoryWithCorrectName_ShouldReturnCorrectCategoryName");
             var mapper = this.InitializeAutoMapper();
             const string categoryName = "Category";
 
@@ -94,9 +94,9 @@ namespace OnlineStore.Tests.AdminCategoriesServiceTests
         }
 
         [Fact]
-        public void GetAllCategories_ShouldReturnCorrectTotalProductsCount()
+        public void WithTwoProducts_ShouldReturnCorrectTotalProductsCount()
         {
-            var dbContextOptions = this.InitializeDbContextOptions("GetAllCategories_ShouldReturnCorrectTotalProductsCount");
+            var dbContextOptions = this.InitializeDbContextOptions("WithTwoProducts_ShouldReturnCorrectTotalProductsCount");
             var mapper = this.InitializeAutoMapper();
 
             using (var dbContext = new OnlineStoreDbContext(dbContextOptions))
@@ -122,9 +122,9 @@ namespace OnlineStore.Tests.AdminCategoriesServiceTests
         }
 
         [Fact]
-        public void GetAllCategories_ShouldReturnCorrectSubCategoriesCount()
+        public void WithTwoSubcategories_ShouldReturnCorrectSubCategoriesCount()
         {
-            var dbContextOptions = this.InitializeDbContextOptions("GetAllCategories_ShouldReturnCorrectSubCategoriesCount");
+            var dbContextOptions = this.InitializeDbContextOptions("WithTwoSubcategories_ShouldReturnCorrectSubCategoriesCount");
             var mapper = this.InitializeAutoMapper();
 
             using (var dbContext = new OnlineStoreDbContext(dbContextOptions))
@@ -149,9 +149,9 @@ namespace OnlineStore.Tests.AdminCategoriesServiceTests
         }
 
         [Fact]
-        public void GetAllCategories_ShouldReturnCorrectSubCategoryId()
+        public void WithOneSubcategoryWithCorrectId_ShouldReturnCorrectSubCategoryId()
         {
-            var dbContextOptions = this.InitializeDbContextOptions("GetAllCategories_ShouldReturnCorrectSubCategoryId");
+            var dbContextOptions = this.InitializeDbContextOptions("WithOneSubcategoryWithCorrectId_ShouldReturnCorrectSubCategoryId");
             var mapper = this.InitializeAutoMapper();
 
             using (var dbContext = new OnlineStoreDbContext(dbContextOptions))
