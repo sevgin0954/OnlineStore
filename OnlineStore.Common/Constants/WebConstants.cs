@@ -22,7 +22,11 @@
 
         public const string SessionProductsKey = "ProductsSessionKey";
 
-        public const string InitialOrderStatus = "On the way";
+        public const string OrderStatusOnTheWay = "On the way";
+
+        public const string OrderStatusCanceled = "Canceled";
+
+        public const string OrderStatusDelivered = "Delivered";
 
         public const int BanUserDays = 365;
 

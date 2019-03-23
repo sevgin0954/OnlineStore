@@ -54,7 +54,9 @@ namespace OnlineStore.Services.Extensions
 
             this.paymentsTypesNames.Add("Cash on delivery");
 
-            this.orderStatusesNames.Add(WebConstants.InitialOrderStatus);
+            this.orderStatusesNames.Add(WebConstants.OrderStatusOnTheWay);
+            this.orderStatusesNames.Add(WebConstants.OrderStatusCanceled);
+            this.orderStatusesNames.Add(WebConstants.OrderStatusDelivered);
 
             this.rolesNames.Add(WebConstants.AdminRole);
         }

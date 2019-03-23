@@ -1,0 +1,48 @@
+﻿@model IList<OrderConciseViewModel>
+@{
+    Layout = "/Views/Shared/_LayoutAdminPanel.cshtml";
+    ViewData["Title"] = "All orders";
+}
+
+<h1>@ViewData["Title"]</h1>
+
+<div class="account-content-inner">
+    <table class="table">
+        <thead>
+            <tr>
+                <th scope="col">Order Id</th>
+                <th scope="col">UserId</th>
+                <th scope="col">Total price</th>
+                <th scope="col">Delivery price</th>
+                <th scope="col">Order status</th>
+                <th scope="col"></th>
+            </tr>
+        </thead>
+        <tbody>
+            @for (int rowCount = 0; rowCount < Model.Count(); rowCount++)
+            {
+                <tr class="@(rowCount % 2 == 0 ? "table-custom-row-blue" : "")">
+                    <td>@Model[rowCount].Id</td>
+                    <td>@Model[rowCount].UserId</td>
+                    <td>@Model[rowCount].TotalPrice</td>
+                    <td>@Model[rowCount].DeliveryPrice</td>
+                    <td>@Model[rowCount].OrderStatusName</td>
+                    <td>
+                        <button class="btn btn-custom-border-blue">Details</button>
+                        @if (Model[rowCount].OrderStatusName == OnlineStore.Common.Constants.WebConstants.OrderStatusCanceled)
+                        {
+                            <button class="btn btn-custom-border-red" disabled>Canceled</button>
+                        }
+                        else
+                        {
+                            <form asp-controller="Orders" asp-action="Cancel" asp-route-orderId="@Model[rowCount].Id" method="post">
+                                <button class="btn btn-custom-border-red" type="submit">Cancel</button>
+                            </form>
+                        }
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
+

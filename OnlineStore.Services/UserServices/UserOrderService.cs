@@ -309,7 +309,7 @@ namespace OnlineStore.Services.UserServices
         private async Task<OrderStatus> GetDefaultOrderStatusFromDatabaseAsync()
         {
             var dbOrderStatus = await this.DbContext.OrdersStatuses
-                .Where(os => os.Name == WebConstants.InitialOrderStatus)
+                .Where(os => os.Name == WebConstants.OrderStatusOnTheWay)
                 .FirstAsync();
 
             return dbOrderStatus;
@@ -338,7 +338,7 @@ namespace OnlineStore.Services.UserServices
 
             foreach (var product in products)
             {
-                totalPrice = product.Price * product.Count;
+                totalPrice += product.Price * product.Count;
             }
 
             return totalPrice;
