@@ -1,6 +1,4 @@
 ﻿using AutoMapper;
-using Microsoft.EntityFrameworkCore;
-using OnlineStore.Data;
 using OnlineStore.Models;
 using OnlineStore.Services.Admin;
 using OnlineStore.Web.Mapping;
@@ -9,175 +7,139 @@ using Xunit;
 
 namespace OnlineStore.Services.Tests.AdminTests.AdminCategoriesServiceTests
 {
-    public class GetAllCategoriesTests
+    public class GetAllCategoriesTests : BaseTest
     {
+        private readonly IMapper mapper;
+
+        public GetAllCategoriesTests()
+        {
+            this.mapper = this.InitializeAutoMapper();
+        }
+
         [Fact]
         public void WithOneCategory_ShouldReturnCorrectCategoriesCount()
         {
-            var dbContextOptions = this.InitializeDbContextOptions("WithOneCategory_ShouldReturnCorrectCategoriesCount");
-            var mapper = this.InitializeAutoMapper();
+            var dbContext = this.GetDbContext();
+            var dbSubCategory = new SubCategory();
+            var dbCategory = new Category();
 
-            using (var dbContext = new OnlineStoreDbContext(dbContextOptions))
-            {
-                var dbSubCategory = new SubCategory();
-                var dbCategory = new Category();
+            dbCategory.SubCategories.Add(dbSubCategory);
+            dbContext.Categories.Add(dbCategory);
+            dbContext.SaveChanges();
 
-                dbCategory.SubCategories.Add(dbSubCategory);
-                dbContext.Categories.Add(dbCategory);
-                dbContext.SaveChanges();
+            var service = new AdminCategoriesService(dbContext, mapper);
 
-                var service = new AdminCategoriesService(dbContext, mapper);
+            var categoriesCount = service.GetAllCategories().Count;
 
-                var categoriesCount = service.GetAllCategories().Count;
-
-                Assert.Equal(1, categoriesCount);
-            }
+            Assert.Equal(1, categoriesCount);
         }
 
         [Fact]
         public void WithoutCategories_ShouldReturnZeroCategoriesCount()
         {
-            var dbContextOptions = this.InitializeDbContextOptions("WithoutCategories_ShouldReturnZeroCategoriesCount");
-            var mapper = this.InitializeAutoMapper();
+            var dbContext = this.GetDbContext();
+            var service = new AdminCategoriesService(dbContext, mapper);
 
-            using (var dbContext = new OnlineStoreDbContext(dbContextOptions))
-            {
-                var service = new AdminCategoriesService(dbContext, mapper);
+            var categories = service.GetAllCategories();
 
-                var categories = service.GetAllCategories();
-
-                Assert.Equal(0, categories.Count);
-            }
+            Assert.Equal(0, categories.Count);
         }
 
         [Fact]
         public void WithOneCategoryWithCorrectId_ShouldReturnCorrectCategoryId()
         {
-            var dbContextOptions = this.InitializeDbContextOptions("WithOneCategoryWithCorrectId_ShouldReturnCorrectCategoryId");
-            var mapper = this.InitializeAutoMapper();
+            var dbContext = this.GetDbContext();
+            var dbCategory = new Category();
+            dbContext.Categories.Add(dbCategory);
+            dbContext.SaveChanges();
 
-            using (var dbContext = new OnlineStoreDbContext(dbContextOptions))
-            {
-                var dbCategory = new Category();
-                dbContext.Categories.Add(dbCategory);
-                dbContext.SaveChanges();
+            var service = new AdminCategoriesService(dbContext, mapper);
 
-                var service = new AdminCategoriesService(dbContext, mapper);
+            var dbCategoryId = dbCategory.Id;
+            var modelCategoryId = service.GetAllCategories().First().CategoryId;
 
-                var dbCategoryId = dbCategory.Id;
-                var modelCategoryId = service.GetAllCategories().First().CategoryId;
-
-                Assert.Equal(dbCategoryId, modelCategoryId);
-            }
+            Assert.Equal(dbCategoryId, modelCategoryId);
         }
 
         [Fact]
         public void WithOneCategoryWithCorrectName_ShouldReturnCorrectCategoryName()
         {
-            var dbContextOptions = this.InitializeDbContextOptions("WithOneCategoryWithCorrectName_ShouldReturnCorrectCategoryName");
-            var mapper = this.InitializeAutoMapper();
             const string categoryName = "Category";
 
-            using (var dbContext = new OnlineStoreDbContext(dbContextOptions))
-            {
-                var category = new Category();
-                category.Name = categoryName;
-                dbContext.Categories.Add(category);
-                dbContext.SaveChanges();
+            var dbContext = this.GetDbContext();
+            var category = new Category();
+            category.Name = categoryName;
+            dbContext.Categories.Add(category);
+            dbContext.SaveChanges();
 
-                var service = new AdminCategoriesService(dbContext, mapper);
+            var service = new AdminCategoriesService(dbContext, mapper);
 
-                var modelCategoryName = category.Name;
+            var modelCategoryName = category.Name;
 
-                Assert.Equal(categoryName, modelCategoryName);
-            }
+            Assert.Equal(categoryName, modelCategoryName);
         }
 
         [Fact]
         public void WithTwoProducts_ShouldReturnCorrectTotalProductsCount()
         {
-            var dbContextOptions = this.InitializeDbContextOptions("WithTwoProducts_ShouldReturnCorrectTotalProductsCount");
-            var mapper = this.InitializeAutoMapper();
+            var dbContext = this.GetDbContext();
+            var category = new Category();
+            var product = new Product();
+            var product2 = new Product();
+            var subCategory = new SubCategory();
 
-            using (var dbContext = new OnlineStoreDbContext(dbContextOptions))
-            {
-                var category = new Category();
-                var product = new Product();
-                var product2 = new Product();
-                var subCategory = new SubCategory();
+            subCategory.Products.Add(product);
+            subCategory.Products.Add(product2);
+            category.SubCategories.Add(subCategory);
+            dbContext.Categories.Add(category);
+            dbContext.SaveChanges();
 
-                subCategory.Products.Add(product);
-                subCategory.Products.Add(product2);
-                category.SubCategories.Add(subCategory);
-                dbContext.Categories.Add(category);
-                dbContext.SaveChanges();
+            var service = new AdminCategoriesService(dbContext, mapper);
+            var categories = service.GetAllCategories();
 
-                var service = new AdminCategoriesService(dbContext, mapper);
-                var categories = service.GetAllCategories();
+            var productCount = categories[0].TotalProductsCount;
 
-                var productCount = categories[0].TotalProductsCount;
-
-                Assert.Equal(2, productCount);
-            }
+            Assert.Equal(2, productCount);
         }
 
         [Fact]
         public void WithTwoSubcategories_ShouldReturnCorrectSubCategoriesCount()
         {
-            var dbContextOptions = this.InitializeDbContextOptions("WithTwoSubcategories_ShouldReturnCorrectSubCategoriesCount");
-            var mapper = this.InitializeAutoMapper();
+            var dbContext = this.GetDbContext();
+            var dbCategory = new Category();
+            var subCategory1 = new SubCategory();
+            var subCategory2 = new SubCategory();
 
-            using (var dbContext = new OnlineStoreDbContext(dbContextOptions))
-            {
-                var dbCategory = new Category();
-                var subCategory1 = new SubCategory();
-                var subCategory2 = new SubCategory();
+            dbCategory.SubCategories.Add(subCategory1);
+            dbCategory.SubCategories.Add(subCategory2);
 
-                dbCategory.SubCategories.Add(subCategory1);
-                dbCategory.SubCategories.Add(subCategory2);
+            dbContext.Categories.Add(dbCategory);
+            dbContext.SaveChanges();
 
-                dbContext.Categories.Add(dbCategory);
-                dbContext.SaveChanges();
+            var service = new AdminCategoriesService(dbContext, mapper);
 
-                var service = new AdminCategoriesService(dbContext, mapper);
+            var modelCategory = service.GetAllCategories().First();
+            var subcategoriesCount = modelCategory.SubCategories.Count;
 
-                var modelCategory = service.GetAllCategories().First();
-                var subcategoriesCount = modelCategory.SubCategories.Count;
-
-                Assert.Equal(2, subcategoriesCount);
-            }
+            Assert.Equal(2, subcategoriesCount);
         }
 
         [Fact]
         public void WithOneSubcategoryWithCorrectId_ShouldReturnCorrectSubCategoryId()
         {
-            var dbContextOptions = this.InitializeDbContextOptions("WithOneSubcategoryWithCorrectId_ShouldReturnCorrectSubCategoryId");
-            var mapper = this.InitializeAutoMapper();
+            var dbContext = this.GetDbContext();
+            var dbCategory = new Category();
+            var dbSubCategory = new SubCategory();
 
-            using (var dbContext = new OnlineStoreDbContext(dbContextOptions))
-            {
-                var dbCategory = new Category();
-                var dbSubCategory = new SubCategory();
+            dbCategory.SubCategories.Add(dbSubCategory);
+            dbContext.Categories.Add(dbCategory);
+            dbContext.SaveChanges();
 
-                dbCategory.SubCategories.Add(dbSubCategory);
-                dbContext.Categories.Add(dbCategory);
-                dbContext.SaveChanges();
+            var service = new AdminCategoriesService(dbContext, mapper);
+            var modelCategory = service.GetAllCategories().First();
+            var modelSubCategoryId = modelCategory.SubCategories.First().Id;
 
-                var service = new AdminCategoriesService(dbContext, mapper);
-                var modelCategory = service.GetAllCategories().First();
-                var modelSubCategoryId = modelCategory.SubCategories.First().Id;
-
-                Assert.Equal(dbSubCategory.Id, modelSubCategoryId);
-            }
-        }
-
-        private DbContextOptions<OnlineStoreDbContext> InitializeDbContextOptions(string name)
-        {
-            var options = new DbContextOptionsBuilder<OnlineStoreDbContext>()
-                .UseInMemoryDatabase(databaseName: name)
-                .Options;
-
-            return options;
+            Assert.Equal(dbSubCategory.Id, modelSubCategoryId);
         }
 
         private IMapper InitializeAutoMapper()
