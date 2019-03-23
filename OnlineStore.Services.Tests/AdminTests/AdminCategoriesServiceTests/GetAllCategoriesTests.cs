@@ -80,6 +80,22 @@ namespace OnlineStore.Services.Tests.AdminTests.AdminCategoriesServiceTests
         }
 
         [Fact]
+        public void WithoutProducts_ShouldReturnZeroTotalProductsCount()
+        {
+            var dbContext = this.GetDbContext();
+            var category = new Category();
+            dbContext.Categories.Add(category);
+            dbContext.SaveChanges();
+
+            var service = new AdminCategoriesService(dbContext, mapper);
+            var categories = service.GetAllCategories();
+
+            var productCount = categories[0].TotalProductsCount;
+
+            Assert.Equal(0, productCount);
+        }
+
+        [Fact]
         public void WithTwoProducts_ShouldReturnCorrectTotalProductsCount()
         {
             var dbContext = this.GetDbContext();
@@ -100,6 +116,23 @@ namespace OnlineStore.Services.Tests.AdminTests.AdminCategoriesServiceTests
             var productCount = categories[0].TotalProductsCount;
 
             Assert.Equal(2, productCount);
+        }
+
+        [Fact]
+        public void WithoutSubcategories_ShouldReturnZeroSubCategoriesCount()
+        {
+            var dbContext = this.GetDbContext();
+            var category = new Category();
+            dbContext.Categories.Add(category);
+            dbContext.SaveChanges();
+
+            var service = new AdminCategoriesService(dbContext, mapper);
+            var categories = service.GetAllCategories();
+
+            var subCategory = categories[0].SubCategories;
+            var subCategoriesCount = subCategory.Count;
+
+            Assert.Equal(0, subCategoriesCount);
         }
 
         [Fact]
