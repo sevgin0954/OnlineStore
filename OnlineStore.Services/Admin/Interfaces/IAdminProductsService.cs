@@ -5,9 +5,9 @@ using System.Threading.Tasks;
 
 namespace OnlineStore.Services.Admin.Interfaces
 {
-    public interface IAdminProductsServices
+    public interface IAdminProductsService
     {
-        ProductBindingModel PrepareModelForAddding(string subcategoryId);
+        ProductBindingModel PrepareModelForAdding(string subcategoryId);
 
         Task AddProduct(ProductBindingModel model);
 

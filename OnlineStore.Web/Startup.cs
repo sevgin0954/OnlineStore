@@ -174,9 +174,9 @@ namespace OnlineStore.Web
 
             services.AddScoped<IAdminCategoriesService, AdminCategoriesService>();
 
-            services.AddScoped<IAdminProductsServices, AdminProductsServices>();
+            services.AddScoped<IAdminProductsService, AdminProductsService>();
 
-            services.AddScoped<IQuestHomeServices, QuestHomeServices>();
+            services.AddScoped<IQuestHomeService, QuestHomeService>();
 
             services.AddScoped<IShoppingCartService, ShoppingCartService>();
 

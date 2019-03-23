@@ -7,9 +7,9 @@ namespace OnlineStore.Web.Controllers
 {
     public class HomeController : Controller
     {
-        private readonly IQuestHomeServices homeServices;
+        private readonly IQuestHomeService homeServices;
 
-        public HomeController(IQuestHomeServices homeServices)
+        public HomeController(IQuestHomeService homeServices)
         {
             this.homeServices = homeServices;
         }

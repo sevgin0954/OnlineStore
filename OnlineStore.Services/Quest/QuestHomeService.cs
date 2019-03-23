@@ -11,11 +11,11 @@ using System.Threading.Tasks;
 
 namespace OnlineStore.Services.Quest
 {
-    public class QuestHomeServices : BaseService, IQuestHomeServices
+    public class QuestHomeService : BaseService, IQuestHomeService
     {
         private readonly IMapper mapper;
 
-        public QuestHomeServices(OnlineStoreDbContext dbContext, IMapper mapper)
+        public QuestHomeService(OnlineStoreDbContext dbContext, IMapper mapper)
             : base(dbContext)
         {
             this.mapper = mapper;

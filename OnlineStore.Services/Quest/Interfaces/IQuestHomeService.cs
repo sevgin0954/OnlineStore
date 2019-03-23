@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 
 namespace OnlineStore.Services.Quest.Interfaces
 {
-    public interface IQuestHomeServices
+    public interface IQuestHomeService
     {
         IndexViewModel PrepareIndexModel();
 

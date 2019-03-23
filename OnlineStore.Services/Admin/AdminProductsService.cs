@@ -12,17 +12,17 @@ using System.Threading.Tasks;
 
 namespace OnlineStore.Services.Admin
 {
-    public class AdminProductsServices : BaseService, IAdminProductsServices
+    public class AdminProductsService : BaseService, IAdminProductsService
     {
         private readonly IMapper mapper;
 
-        public AdminProductsServices(OnlineStoreDbContext dbContext, IMapper mapper)
+        public AdminProductsService(OnlineStoreDbContext dbContext, IMapper mapper)
             : base(dbContext)
         {
             this.mapper = mapper;
         }
 
-        public ProductBindingModel PrepareModelForAddding(string subcategoryId)
+        public ProductBindingModel PrepareModelForAdding(string subcategoryId)
         {
             var dbSubcategory = this.DbContext.SubCategories
                 .Find(subcategoryId);

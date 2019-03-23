@@ -10,9 +10,9 @@ namespace OnlineStore.Web.Areas.Admin.Controllers
 {
     public class ProductsController : BaseAdminController
     {
-        private readonly IAdminProductsServices productsServices;
+        private readonly IAdminProductsService productsServices;
 
-        public ProductsController(IAdminProductsServices productsServices)
+        public ProductsController(IAdminProductsService productsServices)
         {
             this.productsServices = productsServices;
         }
@@ -26,7 +26,7 @@ namespace OnlineStore.Web.Areas.Admin.Controllers
                 return this.View();
             }
 
-            var model = this.productsServices.PrepareModelForAddding(subcategoryId);
+            var model = this.productsServices.PrepareModelForAdding(subcategoryId);
 
             if (model == null)
             {
