@@ -7,27 +7,17 @@ using Xunit;
 
 namespace OnlineStore.Services.Tests.AdminTests.AdminCategoriesServiceTests
 {
-    public class GetAllCategoriesTests : BaseTest
+    public class GetAllCategoriesTests : BaseAdminCategoriesSeviceTest
     {
-        private readonly IMapper mapper;
-
-        public GetAllCategoriesTests()
-        {
-            this.mapper = this.InitializeAutoMapper();
-        }
-
         [Fact]
         public void WithOneCategory_ShouldReturnCorrectCategoriesCount()
         {
             var dbContext = this.GetDbContext();
-            var dbSubCategory = new SubCategory();
             var dbCategory = new Category();
-
-            dbCategory.SubCategories.Add(dbSubCategory);
             dbContext.Categories.Add(dbCategory);
             dbContext.SaveChanges();
 
-            var service = new AdminCategoriesService(dbContext, mapper);
+            var service = this.GetService(dbContext);
 
             var categoriesCount = service.GetAllCategories().Count;
 
@@ -38,7 +28,7 @@ namespace OnlineStore.Services.Tests.AdminTests.AdminCategoriesServiceTests
         public void WithoutCategories_ShouldReturnZeroCategoriesCount()
         {
             var dbContext = this.GetDbContext();
-            var service = new AdminCategoriesService(dbContext, mapper);
+            var service = this.GetService(dbContext);
 
             var categories = service.GetAllCategories();
 
@@ -46,33 +36,31 @@ namespace OnlineStore.Services.Tests.AdminTests.AdminCategoriesServiceTests
         }
 
         [Fact]
-        public void WithOneCategoryWithCorrectId_ShouldReturnCorrectCategoryId()
+        public void WithOneCategoryWithId_ShouldReturnCorrectCategoryId()
         {
             var dbContext = this.GetDbContext();
             var dbCategory = new Category();
             dbContext.Categories.Add(dbCategory);
             dbContext.SaveChanges();
 
-            var service = new AdminCategoriesService(dbContext, mapper);
+            var service = this.GetService(dbContext);
 
             var dbCategoryId = dbCategory.Id;
-            var modelCategoryId = service.GetAllCategories().First().CategoryId;
+            var categoryModel = service.GetAllCategories().First();
 
-            Assert.Equal(dbCategoryId, modelCategoryId);
+            Assert.Equal(dbCategoryId, categoryModel.CategoryId);
         }
 
-        [Fact]
-        public void WithOneCategoryWithCorrectName_ShouldReturnCorrectCategoryName()
+        [Theory]
+        [InlineData("Category")]
+        public void WithOneCategoryWithName_ShouldReturnCorrectCategoryName(string categoryName)
         {
-            const string categoryName = "Category";
-
             var dbContext = this.GetDbContext();
-            var category = new Category();
-            category.Name = categoryName;
+            var category = this.CreateCategory(categoryName);
             dbContext.Categories.Add(category);
             dbContext.SaveChanges();
 
-            var service = new AdminCategoriesService(dbContext, mapper);
+            var service = this.GetService(dbContext);
 
             var modelCategoryName = category.Name;
 
@@ -87,7 +75,8 @@ namespace OnlineStore.Services.Tests.AdminTests.AdminCategoriesServiceTests
             dbContext.Categories.Add(category);
             dbContext.SaveChanges();
 
-            var service = new AdminCategoriesService(dbContext, mapper);
+            var service = this.GetService(dbContext);
+
             var categories = service.GetAllCategories();
 
             var productCount = categories[0].TotalProductsCount;
@@ -110,7 +99,8 @@ namespace OnlineStore.Services.Tests.AdminTests.AdminCategoriesServiceTests
             dbContext.Categories.Add(category);
             dbContext.SaveChanges();
 
-            var service = new AdminCategoriesService(dbContext, mapper);
+            var service = this.GetService(dbContext);
+
             var categories = service.GetAllCategories();
 
             var productCount = categories[0].TotalProductsCount;
@@ -126,7 +116,8 @@ namespace OnlineStore.Services.Tests.AdminTests.AdminCategoriesServiceTests
             dbContext.Categories.Add(category);
             dbContext.SaveChanges();
 
-            var service = new AdminCategoriesService(dbContext, mapper);
+            var service = this.GetService(dbContext);
+
             var categories = service.GetAllCategories();
 
             var subCategory = categories[0].SubCategories;
@@ -149,7 +140,7 @@ namespace OnlineStore.Services.Tests.AdminTests.AdminCategoriesServiceTests
             dbContext.Categories.Add(dbCategory);
             dbContext.SaveChanges();
 
-            var service = new AdminCategoriesService(dbContext, mapper);
+            var service = this.GetService(dbContext);
 
             var modelCategory = service.GetAllCategories().First();
             var subcategoriesCount = modelCategory.SubCategories.Count;
@@ -158,7 +149,7 @@ namespace OnlineStore.Services.Tests.AdminTests.AdminCategoriesServiceTests
         }
 
         [Fact]
-        public void WithOneSubcategoryWithCorrectId_ShouldReturnCorrectSubCategoryId()
+        public void WithOneSubcategoryWithId_ShouldReturnCorrectSubCategoryId()
         {
             var dbContext = this.GetDbContext();
             var dbCategory = new Category();
@@ -168,23 +159,31 @@ namespace OnlineStore.Services.Tests.AdminTests.AdminCategoriesServiceTests
             dbContext.Categories.Add(dbCategory);
             dbContext.SaveChanges();
 
-            var service = new AdminCategoriesService(dbContext, mapper);
+            var service = this.GetService(dbContext);
+
             var modelCategory = service.GetAllCategories().First();
             var modelSubCategoryId = modelCategory.SubCategories.First().Id;
 
             Assert.Equal(dbSubCategory.Id, modelSubCategoryId);
         }
 
-        private IMapper InitializeAutoMapper()
+        [Theory]
+        [InlineData("SubCategory")]
+        public void WithOneSubcategoryWithName_ShouldReturnCorrectSubCategoryName(string subCategoryName)
         {
-            var config = new MapperConfiguration(cfg =>
-            {
-                cfg.AddProfile(new AutoMapperProfile());
-            });
+            var dbContext = this.GetDbContext();
+            var dbCategory = new Category();
+            var dbSubCategory = this.CreateSubcategory(subCategoryName);
+            dbCategory.SubCategories.Add(dbSubCategory);
+            dbContext.Categories.Add(dbCategory);
+            dbContext.SaveChanges();
 
-            var mapper = config.CreateMapper();
+            var service = this.GetService(dbContext);
 
-            return mapper;
+            var categoryModel = service.GetAllCategories().First();
+            var subCategoryModel = categoryModel.SubCategories.First();
+
+            Assert.Equal(subCategoryName, subCategoryModel.Name);
         }
 
         private Product CreateProduct(string name)
@@ -193,6 +192,14 @@ namespace OnlineStore.Services.Tests.AdminTests.AdminCategoriesServiceTests
             product.Name = "Product";
 
             return product;
+        }
+
+        private Category CreateCategory(string name)
+        {
+            var category = new Category();
+            category.Name = name;
+
+            return category;
         }
 
         private SubCategory CreateSubcategory(string name)
