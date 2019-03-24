@@ -48,7 +48,7 @@ namespace OnlineStore.Web.Areas.Admin.Controllers
         [HttpGet]
         public async Task<IActionResult> AddSubcategory(string categoryId)
         {
-            var model = await this.adminCategoriesService.PrepareModelForAdding(categoryId);
+            var model = await this.adminCategoriesService.PrepareSubCategoryModelForAdding(categoryId);
 
             if (model == null)
             {

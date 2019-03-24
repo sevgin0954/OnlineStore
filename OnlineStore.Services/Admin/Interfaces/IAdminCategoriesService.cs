@@ -11,7 +11,7 @@ namespace OnlineStore.Services.Admin.Interfaces
 
         Task CreateCategoryAsync(CategoryBindingModel model);
 
-        Task<SubCategoryBindingCategory> PrepareModelForAdding(string categoryId);
+        Task<SubCategoryBindingCategory> PrepareSubCategoryModelForAdding(string categoryId);
 
         Task AddSubcategory(SubCategoryBindingCategory model);
     }

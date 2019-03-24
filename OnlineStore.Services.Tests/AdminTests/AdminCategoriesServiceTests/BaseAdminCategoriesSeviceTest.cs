@@ -2,6 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using OnlineStore.Data;
 using OnlineStore.Services.Admin;
+using OnlineStore.Services.Admin.Interfaces;
 using OnlineStore.Web.Mapping;
 using System;
 
@@ -25,7 +26,7 @@ namespace OnlineStore.Services.Tests.AdminTests.AdminCategoriesServiceTests
             return context;
         }
 
-        public AdminCategoriesService GetService(OnlineStoreDbContext dbContext)
+        public IAdminCategoriesService GetService(OnlineStoreDbContext dbContext)
         {
             var service = new AdminCategoriesService(dbContext, this.mapper);
 

@@ -44,7 +44,7 @@ namespace OnlineStore.Services.Admin
             await this.DbContext.SaveChangesAsync();
         }
 
-        public async Task<SubCategoryBindingCategory> PrepareModelForAdding(string categoryId)
+        public async Task<SubCategoryBindingCategory> PrepareSubCategoryModelForAdding(string categoryId)
         {
             var dbCategory = await this.DbContext.Categories
                 .FirstOrDefaultAsync(c => c.Id == categoryId);
