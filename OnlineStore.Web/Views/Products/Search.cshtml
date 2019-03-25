@@ -1,4 +1,7 @@
 ﻿@model IEnumerable<ProductConciseViewModel>
+@{
+    ViewData["Title"] = "Products";
+}
 <partial name="_ProductsPartialView">
 
 @if (Model.Count<ProductConciseViewModel>() == 0)
