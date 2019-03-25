@@ -1,10 +1,12 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using OnlineStore.Common.Constants;
 using OnlineStore.Services.Quest.Interfaces;
+using OnlineStore.Web.Areas;
 using System.Threading.Tasks;
 
 namespace OnlineStore.Web.Controllers
 {
-    public class ProductsController : Controller
+    public class ProductsController : BaseController
     {
         private readonly IQuestHomeService questHomeServices;
 
@@ -18,15 +20,20 @@ namespace OnlineStore.Web.Controllers
         {
             var models = await this.questHomeServices.GetProductsBySubcategoryAsync(subcategoryId);
 
-            return View(models);
+            return this.View(models);
         }
 
         [HttpGet]
         public IActionResult Search(string searchWords)
         {
+            if (string.IsNullOrEmpty(searchWords))
+            {
+                return this.Redirect("/");
+            }
+
             var models = this.questHomeServices.GetProductsByKeywords(searchWords);
 
-            return View(models);
+            return this.View(models);
         }
     }
 }
