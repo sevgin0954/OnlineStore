@@ -32,5 +32,7 @@ namespace OnlineStore.Models
         public ICollection<Question> Questions { get; set; } = new List<Question>();
 
         public ICollection<OrderProduct> Orders { get; set; } = new List<OrderProduct>();
+
+        public ICollection<UserFavoriteProduct> UserFavoriteProducts { get; set; } = new List<UserFavoriteProduct>();
     }
 }

@@ -36,6 +36,8 @@ namespace OnlineStore.Data
 
         public DbSet<SubCategory> SubCategories { get; set; }
 
+        public DbSet<UserFavoriteProduct> UsersFavoriteProducts { get; set; }
+
         public OnlineStoreDbContext(DbContextOptions<OnlineStoreDbContext> options)
             : base(options) { }
 
@@ -392,6 +394,19 @@ namespace OnlineStore.Data
                 subCategory.HasMany(sc => sc.Products)
                     .WithOne(p => p.SubCategory)
                     .HasForeignKey(p => p.SubCategoryId);
+            });
+
+            builder.Entity<UserFavoriteProduct>(userFavoriteProduct =>
+            {
+                userFavoriteProduct.HasKey(ufp => new { ufp.ProductId, ufp.UserId });
+
+                userFavoriteProduct.HasOne(ufp => ufp.User)
+                    .WithMany(u => u.UserFavoriteProducts)
+                    .HasForeignKey(ufp => ufp.UserId);
+
+                userFavoriteProduct.HasOne(ufp => ufp.Product)
+                    .WithMany(p => p.UserFavoriteProducts)
+                    .HasForeignKey(ufp => ufp.ProductId);
             });
         }
     }
