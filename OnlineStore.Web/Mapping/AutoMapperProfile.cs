@@ -40,6 +40,7 @@ namespace OnlineStore.Web.Mapping
 
             this.CreateMap<SubCategory, ProductBindingModel>()
                 .ForMember(dest => dest.SubCategoryName, opt => opt.MapFrom(src => src.Name))
+                .ForMember(dest => dest.SubCategoryId, opt => opt.MapFrom(src => src.Id))
                 .ForMember(dest => dest.Photos, opt => opt.Ignore());
 
             //--------------------------------------------------------------------------------------------------------

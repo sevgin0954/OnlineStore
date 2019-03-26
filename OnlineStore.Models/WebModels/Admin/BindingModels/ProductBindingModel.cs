@@ -14,7 +14,7 @@ namespace OnlineStore.Models.WebModels.Admin.BindingModels
         public string SubCategoryName { get; set; }
 
         [Required]
-        public string Name { get; set; }
+        public string ProductName { get; set; }
 
         [Required]
         public decimal Price { get; set; }

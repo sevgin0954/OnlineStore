@@ -39,7 +39,6 @@ namespace OnlineStore.Services.Admin
 
         public async Task AddProduct(ProductBindingModel model)
         {
-
             var dbModel = this.mapper.Map<Product>(model);
 
             await this.MapPhotos(dbModel, model.Photos);
