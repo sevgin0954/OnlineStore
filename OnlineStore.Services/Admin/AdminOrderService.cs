@@ -46,11 +46,12 @@ namespace OnlineStore.Services.Admin
             }
 
             bool isOrderDelivered = this.CheckOrderStatus(dbOrder, WebConstants.OrderStatusDelivered);
-            if (isOrderDelivered == false)
+            if (isOrderDelivered)
             {
-                await this.AddProductsFromOrdersToDatabaseAsync(dbOrder.OrderProducts);
+                return false;
             }
 
+            await this.AddProductsFromOrdersToDatabaseAsync(dbOrder.OrderProducts);
             await this.ChangeOrderStatusToCanceledAsync(dbOrder);
 
             return true;
@@ -75,9 +76,9 @@ namespace OnlineStore.Services.Admin
             return dbOrder;
         }
 
-        private bool CheckOrderStatus(Order order, string orderStatusDelivered)
+        private bool CheckOrderStatus(Order order, string expectedOrderStatus)
         {
-            return order.OrderStatus.Name == orderStatusDelivered;
+            return order.OrderStatus.Name == expectedOrderStatus;
         }
 
         private async Task AddProductsFromOrdersToDatabaseAsync(ICollection<OrderProduct> orders)
