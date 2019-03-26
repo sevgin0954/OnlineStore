@@ -1,5 +1,4 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using OnlineStore.Common.Constants;
 using OnlineStore.Services.Quest.Interfaces;
 using OnlineStore.Web.Areas;
 using System.Threading.Tasks;
@@ -18,7 +17,7 @@ namespace OnlineStore.Web.Controllers
         [HttpGet]
         public async Task<IActionResult> Products(string subcategoryId)
         {
-            var models = await this.questHomeServices.GetProductsBySubcategoryAsync(subcategoryId);
+            var models = await this.questHomeServices.GetProductsBySubcategoryAsync(subcategoryId, this.User);
 
             return this.View(models);
         }
@@ -31,7 +30,7 @@ namespace OnlineStore.Web.Controllers
                 return this.Redirect("/");
             }
 
-            var models = this.questHomeServices.GetProductsByKeywords(searchWords);
+            var models = this.questHomeServices.GetProductsByKeywords(searchWords, this.User);
 
             return this.View(models);
         }

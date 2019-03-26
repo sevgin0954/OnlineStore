@@ -13,6 +13,7 @@ using Security = OnlineStore.Models.WebModels.Security.ViewModels;
 using OnlineStore.Models.WebModels.OrderModels.BindingModels;
 using System.Linq;
 using OnlineStore.Models.WebModels.OrderModels.ViewModels;
+using OnlineStore.Models.WebModels.ProductModels.ViewModels;
 
 namespace OnlineStore.Web.Mapping
 {
@@ -64,6 +65,8 @@ namespace OnlineStore.Web.Mapping
 
             this.CreateMap<Product, ProductViewModel>()
                 .ForMember(dest => dest.OrdersCount, opt => opt.MapFrom(src => src.Orders.Sum(o => o.Count)));
+
+            this.CreateMap<Product, FavoriteProductViewModel>();
 
             //--------------------------------------------------------------------------------------------------------
 

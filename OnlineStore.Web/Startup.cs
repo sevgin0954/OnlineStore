@@ -186,6 +186,8 @@ namespace OnlineStore.Web
 
             services.AddScoped<IAdminOrderService, AdminOrderService>();
 
+            services.AddScoped<IUserFavoritesService, UserFavoritesService>();
+
 
             services.AddSingleton<IEmailSender, EmailSender>();
         }

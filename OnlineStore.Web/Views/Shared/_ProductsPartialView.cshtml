@@ -1,8 +1,10 @@
-﻿@model IEnumerable<ProductConciseViewModel>
+﻿@using Microsoft.AspNetCore.Identity
+@inject SignInManager<User> SignInManager
+
+@model IEnumerable<ProductConciseViewModel>
 @{
     ViewData["Title"] = "Products";
 }
-
 <div class="d-flex flex-row flex-wrap">
     @foreach (var productModel in Model)
     {
@@ -33,16 +35,32 @@
                 <br />
                 <div class="price-container">@productModel.Price $</div>
             }
-            <div class="mb-auto">
-                <button data-productId="@productModel.Id" addToShoppingCartBtn" class="btn btn-shoping-card">
-                    <i class="fas fa-shopping-cart"></i>
-                    Add to shoping card
-                </button>
-            </div>
+            @if (SignInManager.IsSignedIn(User))
+            {
+                <div class="row">
+                    <button data-productId="@productModel.Id" class="btn btn-shoping-card">
+                        <i class="fas fa-shopping-cart"></i>
+                        Add to shoping card
+                    </button>
+                    @if (productModel.IsAddedToFavorite)
+                    {
+                        <button data-productId="@productModel.Id" class="btn btn-custom btn-favorite-hearth-filled">
+                            <i class="fas fa-heart fa-2x ml-auto"></i>
+                        </button>
+                    }
+                    else
+                    {
+                        <button data-productId="@productModel.Id" class="btn btn-custom btn-favorite-hearth">
+                            <i class="fas fa-heart fa-2x ml-auto"></i>
+                        </button>
+                    }
+                </div>
+            }
         </div>
     }
 </div>
 
+@*Add product to shoping card scripts*@
 <script>
     $(function () {
         let btn = $(".btn-shoping-card");
@@ -58,5 +76,59 @@
                 data: { productId: productId }
             })
         })
+    })
+</script>
+
+@*Add product to favorites scripts*@
+<script>
+    $(function () {
+        let hearthFilledClassName = "btn-favorite-hearth-filled";
+        let hearthClassName = "btn-favorite-hearth";
+
+        let hearthFilledBtns = $("." + hearthFilledClassName);
+        let hearthBtns = $("." + hearthClassName);
+
+        $(document).on("click", "." + hearthFilledClassName, function (e) {
+            let btnTarget = e.currentTarget;
+
+            ajaxRemoveProduct(btnTarget);
+
+            function ajaxRemoveProduct(btnTarget) {
+                let productId = $(btnTarget).attr("data-productId");
+
+                $.ajax({
+                    url: "/Identity/Favorites/RemoveProduct",
+                    method: "POST",
+                    data: { productId: productId },
+                    success: function () {
+                        changeBtnClass(btnTarget, hearthFilledClassName, hearthClassName);
+                    }   
+                });
+            }
+        })
+
+        $(document).on("click", "." + hearthClassName, function (e) {
+            let btnTarget = e.currentTarget;
+
+            ajaxAddProduct(btnTarget);
+
+            function ajaxAddProduct(btnTarget) {
+                let productId = $(btnTarget).attr("data-productId");
+
+                $.ajax({
+                    url: "/Identity/Favorites/AddProduct",
+                    method: "POST",
+                    data: { productId: productId },
+                    success: function () {
+                        changeBtnClass(btnTarget, hearthClassName, hearthFilledClassName);
+                    }   
+                });
+            }
+        })
+
+        function changeBtnClass(btnTarget, oldClass, newClass) {
+            $(btnTarget).removeClass(oldClass);
+            $(btnTarget).addClass(newClass);
+        }
     })
 </script>

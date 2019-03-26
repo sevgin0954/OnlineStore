@@ -19,5 +19,7 @@
         public int ReviewsCount { get; set; }
 
         public int ReviewsAvgStartRating { get; set; }
+
+        public bool IsAddedToFavorite { get; set; }
     }
 }

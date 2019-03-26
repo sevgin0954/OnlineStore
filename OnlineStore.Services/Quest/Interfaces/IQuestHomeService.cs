@@ -1,5 +1,6 @@
 ﻿using OnlineStore.Models.WebModels.Quest.ViewModels;
 using System.Collections.Generic;
+using System.Security.Claims;
 using System.Threading.Tasks;
 
 namespace OnlineStore.Services.Quest.Interfaces
@@ -8,8 +9,8 @@ namespace OnlineStore.Services.Quest.Interfaces
     {
         IndexViewModel PrepareIndexModel();
 
-        Task<IEnumerable<ProductConciseViewModel>> GetProductsBySubcategoryAsync(string subcategoryId);
+        Task<IEnumerable<ProductConciseViewModel>> GetProductsBySubcategoryAsync(string subcategoryId, ClaimsPrincipal user);
 
-        IEnumerable<ProductConciseViewModel> GetProductsByKeywords(string words);
+        IEnumerable<ProductConciseViewModel> GetProductsByKeywords(string words, ClaimsPrincipal user);
     }
 }

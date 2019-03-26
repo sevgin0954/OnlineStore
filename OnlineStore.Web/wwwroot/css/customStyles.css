@@ -60,11 +60,16 @@
     border: none !important;
 }
 
-.btn-custom {
+/*.btn-custom {
     background-color: #ffffff;
     outline: none !important;
     box-shadow: none !important;
-}
+}*/
+
+/*.btn-custom:hover, .btn-custom:active, .btn-custom:focus {
+    background-color: #ebf5ff;
+    color: #000000;
+}*/
 
 .btn-custom-border-blue {
     background-color: #ffffff;
@@ -101,11 +106,6 @@
     color: #000000;
 }
 
-.btn-custom:hover, .btn-custom:active, .btn-custom:focus {
-    background-color: #ebf5ff;
-    color: #000000;
-}
-
 .btn-custom-border-blue:hover, .btn-custom-border-blue:active, .btn-custom-border-blue:focus {
     background-color: #ebf5ff;
     color: #000000;
@@ -116,6 +116,39 @@
     color: #000000;
 }
 
+.btn-shoping-card {
+    border-radius: 5px;
+    padding: 4px;
+    background-color: #005eb8;
+    margin-top: 100px;
+}
+
+.btn-favorite-hearth {
+    margin-top: 100px;
+    color: #ffffff;
+    background-color: #ffffff;
+    box-shadow: none !important;
+}
+
+.btn-favorite-hearth > i:hover {
+    color: #ff0000;
+    transition: color 0.4s ease-in-out;
+}
+
+.btn-favorite-hearth-filled {
+    margin-top: 100px;
+    background-color: #ffffff;
+    box-shadow: none !important;
+}
+
+.btn-favorite-hearth, .btn-favorite-hearth-filled > i {
+    text-shadow: 0 0 10px #ff0000;
+}
+
+.btn-favorite-hearth-filled > i {
+    color: #ff0000;
+}
+
 .image-holder-button {
     width: 98px;
 }
@@ -124,7 +157,6 @@
     padding: 0px;
     border: 1px solid;
     border-radius: 10px;
-    /*border-color: #A9A9A9;*/
     border-color: #dee2e6;
     background-color: #ffffff;
     margin-top: 40px;
@@ -145,8 +177,6 @@
 
 .account-menu-selected {
     background-color: #e4f1f9;
-    /*border-top-right-radius: 80px !important;
-    border-bottom-right-radius: 80px !important;*/
 }
 
 .account-content {
@@ -306,13 +336,6 @@
     text-align: center;
     font-size: 18px;
     font-weight: 700;
-}
-
-.btn-shoping-card {
-    border-radius: 5px;
-    padding: 4px;
-    background-color: #005eb8;
-    margin-top: 100px;
 }
 
 .select-list-small {

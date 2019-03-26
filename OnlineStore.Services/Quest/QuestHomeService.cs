@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using OnlineStore.Data;
 using OnlineStore.Models;
@@ -7,6 +8,7 @@ using OnlineStore.Services.Quest.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
 
 namespace OnlineStore.Services.Quest
@@ -14,11 +16,13 @@ namespace OnlineStore.Services.Quest
     public class QuestHomeService : BaseService, IQuestHomeService
     {
         private readonly IMapper mapper;
+        private readonly SignInManager<User> signInManager;
 
-        public QuestHomeService(OnlineStoreDbContext dbContext, IMapper mapper)
+        public QuestHomeService(OnlineStoreDbContext dbContext, IMapper mapper, SignInManager<User> signInManager)
             : base(dbContext)
         {
             this.mapper = mapper;
+            this.signInManager = signInManager;
         }
 
         public IndexViewModel PrepareIndexModel()
@@ -35,7 +39,9 @@ namespace OnlineStore.Services.Quest
             return model;
         }
 
-        public async Task<IEnumerable<ProductConciseViewModel>> GetProductsBySubcategoryAsync(string subcategoryId)
+        public async Task<IEnumerable<ProductConciseViewModel>> GetProductsBySubcategoryAsync(
+            string subcategoryId, 
+            ClaimsPrincipal user)
         {
             var products = await GetProductFromDatabase(subcategoryId);
 
@@ -44,20 +50,50 @@ namespace OnlineStore.Services.Quest
                 return null;
             }
 
-            var models = this.MapProductModels(products);
+            var dbUserFavoriteProducts = this.GetUserFavoriteProducts(user);
+
+            var models = this.MapProductModels(products, dbUserFavoriteProducts);
 
             return models;
         }
 
-        public IEnumerable<ProductConciseViewModel> GetProductsByKeywords(string words)
+        public IEnumerable<ProductConciseViewModel> GetProductsByKeywords(string words, ClaimsPrincipal user)
         {
             var keyWords = ExtractKeyWords(words);
             var products = GetProductsFromDatabase();
             var filteredProducts = FilterProductsByKeyWords(keyWords, products);
 
-            var models = this.MapProductModels(filteredProducts);
+            var dbUserFavoriteProducts = this.GetUserFavoriteProducts(user);
+            var models = this.MapProductModels(filteredProducts, dbUserFavoriteProducts);
 
             return models;
+        }
+
+        private ICollection<UserFavoriteProduct> GetUserFavoriteProducts(ClaimsPrincipal user)
+        {
+            var dbUser = GetUserWithFavoriteProductsFromDatabase(user);
+            if (dbUser == null)
+            {
+                return new List<UserFavoriteProduct>();
+            }
+            var dbUserFavoriteProducts = dbUser.UserFavoriteProducts;
+
+            return dbUserFavoriteProducts;
+        }
+
+        private User GetUserWithFavoriteProductsFromDatabase(ClaimsPrincipal user)
+        {
+            if (user.Identity.IsAuthenticated == false)
+            {
+                return null;
+            }
+
+            var dbUser = this.DbContext.Users
+                .Where(u => u.UserName == user.Identity.Name)
+                .Include(u => u.UserFavoriteProducts)
+                .First();
+
+            return dbUser;
         }
 
         private IEnumerable<Product> GetProductsFromDatabase()
@@ -78,21 +114,40 @@ namespace OnlineStore.Services.Quest
                 .ToList();
         }
 
-        private IList<ProductConciseViewModel> MapProductModels(IList<Product> source)
+        private IList<ProductConciseViewModel> MapProductModels(
+            IList<Product> source, 
+            IEnumerable<UserFavoriteProduct> userFavoriteProducts)
         {
-            var destination = this.mapper.Map<List<ProductConciseViewModel>>(source);
+            var productModel = this.mapper.Map<List<ProductConciseViewModel>>(source);
 
-            for (int a = 0; a < destination.Count; a++)
+            for (int a = 0; a < productModel.Count; a++)
             {
-                destination[a].MainPhoto = source[a].Photos.First().Data;
-                destination[a].ReviewsCount = source[a].Reviews.Count;
-                destination[a].ReviewsAvgStartRating = source[a].Reviews.Count > 0 ?
+                productModel[a].MainPhoto = source[a].Photos.First().Data;
+                productModel[a].ReviewsCount = source[a].Reviews.Count;
+                productModel[a].ReviewsAvgStartRating = source[a].Reviews.Count > 0 ?
                     (int)Math.Round(source[a].Reviews.Average(r => r.StarsCount), MidpointRounding.AwayFromZero)
                         :
                     0;
+
+                var currentProductId = productModel[a].Id;
+                var isProductExist = this.IsExistInFavorites(currentProductId, userFavoriteProducts);
+                productModel[a].IsAddedToFavorite = isProductExist;
             }
 
-            return destination;
+            return productModel;
+        }
+
+        private bool IsExistInFavorites(string productId, IEnumerable<UserFavoriteProduct> userFavoriteProducts)
+        {
+            foreach (var userProduct in userFavoriteProducts)
+            {
+                if (userProduct.ProductId == productId)
+                {
+                    return true;
+                }
+            }
+
+            return false;
         }
 
         private async Task<IList<Product>> GetProductFromDatabase(string subcategoryId)
