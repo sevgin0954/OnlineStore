@@ -1,7 +1,4 @@
-﻿using AutoMapper;
-using OnlineStore.Models;
-using OnlineStore.Services.Admin;
-using OnlineStore.Web.Mapping;
+﻿using OnlineStore.Models;
 using System.Linq;
 using Xunit;
 
@@ -36,7 +33,7 @@ namespace OnlineStore.Services.Tests.AdminTests.AdminCategoriesServiceTests
         }
 
         [Fact]
-        public void WithOneCategoryWithId_ShouldReturnCorrectCategoryId()
+        public void WithOneCategoryWithId_ShouldReturnModelWithCorrectCategoryId()
         {
             var dbContext = this.GetDbContext();
             var dbCategory = new Category();
@@ -53,7 +50,7 @@ namespace OnlineStore.Services.Tests.AdminTests.AdminCategoriesServiceTests
 
         [Theory]
         [InlineData("Category")]
-        public void WithOneCategoryWithName_ShouldReturnCorrectCategoryName(string categoryName)
+        public void WithOneCategoryWithName_ShouldReturnModelWithCorrectCategoryName(string categoryName)
         {
             var dbContext = this.GetDbContext();
             var category = this.CreateCategory(categoryName);
@@ -149,7 +146,7 @@ namespace OnlineStore.Services.Tests.AdminTests.AdminCategoriesServiceTests
         }
 
         [Fact]
-        public void WithOneSubcategoryWithId_ShouldReturnCorrectSubCategoryId()
+        public void WithOneSubcategoryWithId_ShouldReturnModelWithCorrectSubCategoryId()
         {
             var dbContext = this.GetDbContext();
             var dbCategory = new Category();
@@ -169,7 +166,7 @@ namespace OnlineStore.Services.Tests.AdminTests.AdminCategoriesServiceTests
 
         [Theory]
         [InlineData("SubCategory")]
-        public void WithOneSubcategoryWithName_ShouldReturnCorrectSubCategoryName(string subCategoryName)
+        public void WithOneSubcategoryWithName_ShouldReturnModelWithCorrectSubCategoryName(string subCategoryName)
         {
             var dbContext = this.GetDbContext();
             var dbCategory = new Category();
