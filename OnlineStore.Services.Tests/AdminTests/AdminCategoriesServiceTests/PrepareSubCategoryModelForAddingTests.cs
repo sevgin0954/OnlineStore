@@ -37,7 +37,7 @@ namespace OnlineStore.Services.Tests.AdminTests.AdminCategoriesServiceTests
             var service = this.GetService(dbContext);
             
             var model = await service.PrepareSubCategoryModelForAdding(dbCategory.Id);
-            var modelName = model.Name;
+            var modelName = model.CategoryName;
 
             Assert.Equal(categoryName, modelName);
         }
