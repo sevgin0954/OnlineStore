@@ -17,8 +17,9 @@ namespace OnlineStore.Services.Tests.AdminTests.AdminCategoriesServiceTests
 
             var dbCategoryId = dbCategory.Id;
             var model = await service.PrepareSubCategoryModelForAdding(dbCategoryId);
+            var modelCategoryId = model.CategoryId;
 
-            Assert.Equal(dbCategoryId, model.CategoryId);
+            Assert.Equal(dbCategoryId, modelCategoryId);
         }
 
         [Theory]
@@ -32,11 +33,13 @@ namespace OnlineStore.Services.Tests.AdminTests.AdminCategoriesServiceTests
             };
             dbContext.Categories.Add(dbCategory);
             dbContext.SaveChanges();
+
             var service = this.GetService(dbContext);
             
             var model = await service.PrepareSubCategoryModelForAdding(dbCategory.Id);
+            var modelName = model.Name;
 
-            Assert.Equal(categoryName, model.CategoryName);
+            Assert.Equal(categoryName, modelName);
         }
 
         [Theory]

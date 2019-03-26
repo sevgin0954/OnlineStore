@@ -28,8 +28,9 @@ namespace OnlineStore.Services.Tests.AdminTests.AdminCategoriesServiceTests
             var service = this.GetService(dbContext);
 
             var categories = service.GetAllCategories();
+            var categoriesCount = categories.Count;
 
-            Assert.Equal(0, categories.Count);
+            Assert.Equal(0, categoriesCount);
         }
 
         [Fact]
@@ -43,9 +44,10 @@ namespace OnlineStore.Services.Tests.AdminTests.AdminCategoriesServiceTests
             var service = this.GetService(dbContext);
 
             var dbCategoryId = dbCategory.Id;
-            var categoryModel = service.GetAllCategories().First();
+            var firstCategoryModel = service.GetAllCategories().First();
+            var modelCategoryId = firstCategoryModel.CategoryId;
 
-            Assert.Equal(dbCategoryId, categoryModel.CategoryId);
+            Assert.Equal(dbCategoryId, modelCategoryId);
         }
 
         [Theory]
@@ -53,13 +55,14 @@ namespace OnlineStore.Services.Tests.AdminTests.AdminCategoriesServiceTests
         public void WithOneCategoryWithName_ShouldReturnModelWithCorrectCategoryName(string categoryName)
         {
             var dbContext = this.GetDbContext();
-            var category = this.CreateCategory(categoryName);
-            dbContext.Categories.Add(category);
+            var dbCategory = this.CreateCategory(categoryName);
+            dbContext.Categories.Add(dbCategory);
             dbContext.SaveChanges();
 
             var service = this.GetService(dbContext);
 
-            var modelCategoryName = category.Name;
+            var firstCategoryModel = service.GetAllCategories().First();
+            var modelCategoryName = firstCategoryModel.Name;
 
             Assert.Equal(categoryName, modelCategoryName);
         }
@@ -68,59 +71,56 @@ namespace OnlineStore.Services.Tests.AdminTests.AdminCategoriesServiceTests
         public void WithoutProducts_ShouldReturnZeroTotalProductsCount()
         {
             var dbContext = this.GetDbContext();
-            var category = new Category();
-            dbContext.Categories.Add(category);
+            var dbCategory = new Category();
+            dbContext.Categories.Add(dbCategory);
             dbContext.SaveChanges();
 
             var service = this.GetService(dbContext);
 
-            var categories = service.GetAllCategories();
+            var firstCategoryModel = service.GetAllCategories().First();
+            var modelProductCount = firstCategoryModel.TotalProductsCount;
 
-            var productCount = categories[0].TotalProductsCount;
-
-            Assert.Equal(0, productCount);
+            Assert.Equal(0, modelProductCount);
         }
 
         [Fact]
         public void WithTwoProducts_ShouldReturnCorrectTotalProductsCount()
         {
             var dbContext = this.GetDbContext();
-            var category = new Category();
-            var product = new Product();
-            var product2 = new Product();
-            var subCategory = new SubCategory();
+            var dbCategory = new Category();
+            var dbProduct = new Product();
+            var dbProduct2 = new Product();
+            var dbSubCategory = new SubCategory();
 
-            subCategory.Products.Add(product);
-            subCategory.Products.Add(product2);
-            category.SubCategories.Add(subCategory);
-            dbContext.Categories.Add(category);
+            dbSubCategory.Products.Add(dbProduct);
+            dbSubCategory.Products.Add(dbProduct2);
+            dbCategory.SubCategories.Add(dbSubCategory);
+            dbContext.Categories.Add(dbCategory);
             dbContext.SaveChanges();
 
             var service = this.GetService(dbContext);
 
-            var categories = service.GetAllCategories();
+            var firstCategoryModel = service.GetAllCategories().First();
+            var modelProductCount = firstCategoryModel.TotalProductsCount;
 
-            var productCount = categories[0].TotalProductsCount;
-
-            Assert.Equal(2, productCount);
+            Assert.Equal(2, modelProductCount);
         }
 
         [Fact]
         public void WithoutSubcategories_ShouldReturnZeroSubCategoriesCount()
         {
             var dbContext = this.GetDbContext();
-            var category = new Category();
-            dbContext.Categories.Add(category);
+            var dbCategory = new Category();
+            dbContext.Categories.Add(dbCategory);
             dbContext.SaveChanges();
 
             var service = this.GetService(dbContext);
 
-            var categories = service.GetAllCategories();
+            var firstCategoryModel = service.GetAllCategories().First();
+            var modelSubCategory = firstCategoryModel.SubCategories;
+            var modelSubCategoriesCount = modelSubCategory.Count;
 
-            var subCategory = categories[0].SubCategories;
-            var subCategoriesCount = subCategory.Count;
-
-            Assert.Equal(0, subCategoriesCount);
+            Assert.Equal(0, modelSubCategoriesCount);
         }
 
         [Fact]
@@ -128,21 +128,20 @@ namespace OnlineStore.Services.Tests.AdminTests.AdminCategoriesServiceTests
         {
             var dbContext = this.GetDbContext();
             var dbCategory = new Category();
-            var subCategory1 = new SubCategory();
-            var subCategory2 = new SubCategory();
-
-            dbCategory.SubCategories.Add(subCategory1);
-            dbCategory.SubCategories.Add(subCategory2);
-
+            var dbSubCategory1 = new SubCategory();
+            var dbSubCategory2 = new SubCategory();
+            dbCategory.SubCategories.Add(dbSubCategory1);
+            dbCategory.SubCategories.Add(dbSubCategory2);
             dbContext.Categories.Add(dbCategory);
             dbContext.SaveChanges();
 
             var service = this.GetService(dbContext);
 
-            var modelCategory = service.GetAllCategories().First();
-            var subcategoriesCount = modelCategory.SubCategories.Count;
+            var firstCategoryModel = service.GetAllCategories().First();
+            var modelSubCategories = firstCategoryModel.SubCategories;
+            var modelSubcategoriesCount = modelSubCategories.Count;
 
-            Assert.Equal(2, subcategoriesCount);
+            Assert.Equal(2, modelSubcategoriesCount);
         }
 
         [Fact]
@@ -158,10 +157,11 @@ namespace OnlineStore.Services.Tests.AdminTests.AdminCategoriesServiceTests
 
             var service = this.GetService(dbContext);
 
-            var modelCategory = service.GetAllCategories().First();
-            var modelSubCategoryId = modelCategory.SubCategories.First().Id;
+            var firstCategoryModel = service.GetAllCategories().First();
+            var modelFirstSubcategory = firstCategoryModel.SubCategories.First();
+            var modelFirstSubcategoryId = modelFirstSubcategory.Id;
 
-            Assert.Equal(dbSubCategory.Id, modelSubCategoryId);
+            Assert.Equal(dbSubCategory.Id, modelFirstSubcategoryId);
         }
 
         [Theory]
@@ -177,32 +177,39 @@ namespace OnlineStore.Services.Tests.AdminTests.AdminCategoriesServiceTests
 
             var service = this.GetService(dbContext);
 
-            var categoryModel = service.GetAllCategories().First();
-            var subCategoryModel = categoryModel.SubCategories.First();
+            var firstCategoryModel = service.GetAllCategories().First();
+            var modelFirstSubCategory = firstCategoryModel.SubCategories.First();
+            var modelFirstSubCategoryName = modelFirstSubCategory.Name;
 
-            Assert.Equal(subCategoryName, subCategoryModel.Name);
+            Assert.Equal(subCategoryName, modelFirstSubCategoryName);
         }
 
         private Product CreateProduct(string name)
         {
-            var product = new Product();
-            product.Name = "Product";
+            var product = new Product
+            {
+                Name = name
+            };
 
             return product;
         }
 
         private Category CreateCategory(string name)
         {
-            var category = new Category();
-            category.Name = name;
+            var category = new Category
+            {
+                Name = name
+            };
 
             return category;
         }
 
         private SubCategory CreateSubcategory(string name)
         {
-            var subCategory = new SubCategory();
-            subCategory.Name = name;
+            var subCategory = new SubCategory
+            {
+                Name = name
+            };
 
             return subCategory;
         }

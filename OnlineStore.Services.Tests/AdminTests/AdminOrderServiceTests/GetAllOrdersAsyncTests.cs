@@ -1,4 +1,6 @@
-﻿using OnlineStore.Models;
+﻿using OnlineStore.Data;
+using OnlineStore.Models;
+using OnlineStore.Models.WebModels.Admin.ViewModels;
 using System.Linq;
 using System.Threading.Tasks;
 using Xunit;
@@ -43,11 +45,7 @@ namespace OnlineStore.Services.Tests.AdminTests.AdminOrderServiceTests
             dbContext.Orders.Add(dbOrder);
             dbContext.SaveChanges();
 
-            var service = this.GetService(dbContext);
-
-            var orderModels = await service.GetAllOrdersAsync();
-            var firstOrderModel = orderModels.First();
-
+            var firstOrderModel = await this.GetFirstOrderModelAsync(dbContext);
             var dbOrderId = dbOrder.Id;
             var orderModelId = firstOrderModel.Id;
 
@@ -64,11 +62,7 @@ namespace OnlineStore.Services.Tests.AdminTests.AdminOrderServiceTests
             dbContext.Orders.Add(dbOrder);
             dbContext.SaveChanges();
 
-            var service = this.GetService(dbContext);
-
-            var orderModels = await service.GetAllOrdersAsync();
-            var firstOrderModel = orderModels.First();
-
+            var firstOrderModel = await this.GetFirstOrderModelAsync(dbContext);
             var dbUserId = dbUser.Id;
             var modelUserId = firstOrderModel.UserId;
 
@@ -87,11 +81,7 @@ namespace OnlineStore.Services.Tests.AdminTests.AdminOrderServiceTests
             dbContext.Orders.Add(dbOrder);
             dbContext.SaveChanges();
 
-            var service = this.GetService(dbContext);
-
-            var orderModels = await service.GetAllOrdersAsync();
-            var firstOrderModel = orderModels.First();
-            
+            var firstOrderModel = await this.GetFirstOrderModelAsync(dbContext);
             var modelTotalPrice = firstOrderModel.TotalPrice;
 
             Assert.Equal(totalPrice, modelTotalPrice);
@@ -108,12 +98,8 @@ namespace OnlineStore.Services.Tests.AdminTests.AdminOrderServiceTests
             };
             dbContext.Orders.Add(dbOrder);
             dbContext.SaveChanges();
-
-            var service = this.GetService(dbContext);
-
-            var orderModels = await service.GetAllOrdersAsync();
-            var firstOrderModel = orderModels.First();
-
+            
+            var firstOrderModel = await this.GetFirstOrderModelAsync(dbContext);
             var modelDeliveryPrice = firstOrderModel.DeliveryPrice;
 
             Assert.Equal(deliveryPrice, modelDeliveryPrice);
@@ -134,15 +120,21 @@ namespace OnlineStore.Services.Tests.AdminTests.AdminOrderServiceTests
             };
             dbContext.Orders.Add(dbOrder);
             dbContext.SaveChanges();
+            
+            var firstOrderModel = await this.GetFirstOrderModelAsync(dbContext);
+            var modelStatusName = firstOrderModel.OrderStatusName;
 
+            Assert.Equal(statusName, modelStatusName);
+        }
+
+        private async Task<OrderConciseViewModel> GetFirstOrderModelAsync(OnlineStoreDbContext dbContext)
+        {
             var service = this.GetService(dbContext);
 
             var orderModels = await service.GetAllOrdersAsync();
             var firstOrderModel = orderModels.First();
 
-            var modelStatusName = firstOrderModel.OrderStatusName;
-
-            Assert.Equal(statusName, modelStatusName);
+            return firstOrderModel;
         }
     }
 }
