@@ -47,10 +47,7 @@ namespace OnlineStore.Web.Mapping
 
             this.CreateMap<ProductBindingModel, Product>()
                 .ForMember(dest => dest.Photos, opt => opt.Ignore())
-                .ReverseMap()
-                .ForMember(dest => dest.Photos, opt => opt.Ignore())
-                .ForMember(dest => dest.ProductId, opt => opt.MapFrom(src => src.Id))
-                .ForMember(dest => dest.SubCategoryName, opt => opt.MapFrom(src => src.SubCategory.Name));
+                .ForMember(dest => dest.Name, opt => opt.MapFrom(src => src.ProductName));
 
             this.CreateMap<Product, Quest.ProductConciseViewModel>();
 

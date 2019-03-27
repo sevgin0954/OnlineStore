@@ -69,7 +69,7 @@ namespace OnlineStore.Web.Areas.Admin.Controllers
                 return Redirect("/Admin/Categories");
             }
 
-            var model = await this.productsServices.GetProducts(subcategoryId);
+            var model = await this.productsServices.GetProductsAsync(subcategoryId);
 
             if (model == null)
             {

@@ -47,7 +47,7 @@ namespace OnlineStore.Services.Admin
             await this.DbContext.SaveChangesAsync();
         }
 
-        public async Task<IEnumerable<ProductViewModel>> GetProducts(string subcategoryId)
+        public async Task<IEnumerable<ProductViewModel>> GetProductsAsync(string subcategoryId)
         {
             var subcategory = await this.DbContext.SubCategories
                 .Include(sc => sc.Products)

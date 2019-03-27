@@ -11,7 +11,7 @@ namespace OnlineStore.Services.Admin.Interfaces
 
         Task AddProduct(ProductBindingModel model);
 
-        Task<IEnumerable<ProductViewModel>> GetProducts(string subcategoryId);
+        Task<IEnumerable<ProductViewModel>> GetProductsAsync(string subcategoryId);
 
         Task<ProductBindingModel> PrepareModelForEditing(string productId);
 
