@@ -13,7 +13,7 @@ namespace OnlineStore.Services.Admin.Interfaces
 
         Task<IEnumerable<ProductViewModel>> GetProductsAsync(string subcategoryId);
 
-        Task<ProductBindingModel> PrepareModelForEditing(string productId);
+        Task<ProductBindingModel> PrepareModelForEditingAsync(string productId);
 
         Task<bool> Edit(ProductBindingModel model, string productId);
 

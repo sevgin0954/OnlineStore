@@ -66,7 +66,7 @@ namespace OnlineStore.Services.Admin
             return models;
         }
 
-        public async Task<ProductBindingModel> PrepareModelForEditing(string productId)
+        public async Task<ProductBindingModel> PrepareModelForEditingAsync(string productId)
         {
             var product = await this.DbContext.Products
                 .Include(p => p.Photos)
