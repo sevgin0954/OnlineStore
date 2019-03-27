@@ -15,7 +15,7 @@ namespace OnlineStore.Services.Admin.Interfaces
 
         Task<ProductBindingModel> PrepareModelForEditingAsync(string productId);
 
-        Task<bool> Edit(ProductBindingModel model, string productId);
+        Task<bool> EditAsync(ProductBindingModel model, string productId);
 
         Task<bool> Delete(string productId);
     }

@@ -83,6 +83,12 @@ namespace OnlineStore.Web.Areas.Admin.Controllers
         [HttpGet]
         public async Task<IActionResult> Edit(string id)
         {
+            if (id == null)
+            {
+                this.AddStatusMessage(ControllerConstats.ErrorMessageWrongId, ControllerConstats.MessageTypeDanger);
+                return this.Redirect("/Admin/Categories");
+            }
+
             var model = await this.productsServices.PrepareModelForEditingAsync(id);
 
             if (model == null)
@@ -110,7 +116,7 @@ namespace OnlineStore.Web.Areas.Admin.Controllers
                 return this.RedirectToAction("Edit", new { model.ProductId });
             }
 
-            result = await this.productsServices.Edit(model, model.ProductId);
+            result = await this.productsServices.EditAsync(model, model.ProductId);
 
             if (result == false)
             {

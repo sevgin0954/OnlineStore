@@ -83,13 +83,8 @@ namespace OnlineStore.Services.Admin
             return model;
         }
 
-        public async Task<bool> Edit(ProductBindingModel model, string productId)
+        public async Task<bool> EditAsync(ProductBindingModel model, string productId)
         {
-            if (productId == null)
-            {
-                return false;
-            }
-
             var dbModel = await this.DbContext.Products
                 .FindAsync(productId);
 
