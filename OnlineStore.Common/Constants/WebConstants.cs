@@ -37,5 +37,9 @@
         public const int DeliveryRequiredDays = 2;
 
         public const decimal DeliveryPrice = 5;
+
+        public const int DaysPastToCountAsNewUser = 1;
+
+        public const int DaysPastToCountAsNewOrder = 1;
     }
 }

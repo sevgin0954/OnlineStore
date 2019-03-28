@@ -12,11 +12,5 @@ namespace OnlineStore.Services.Admin.Interfaces
         IEnumerable<User> FilterUsersByRegisterDate(DateTime startDate, DateTime endDate);
 
         IEnumerable<Order> FilterOrdersByDate(DateTime startDate, DateTime endDate);
-
-        long CountTotalUsers();
-
-        long CountTotalOrders();
-
-        long CountTotalProducts();
     }
 }
