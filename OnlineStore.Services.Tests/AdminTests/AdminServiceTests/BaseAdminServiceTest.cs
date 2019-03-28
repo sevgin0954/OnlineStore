@@ -20,7 +20,7 @@ namespace OnlineStore.Services.Tests.AdminTests.AdminServiceTests
         private UserManager<User> GetUserManager(OnlineStoreDbContext dbContext)
         {
             var userStore = new Mock<IUserStore<User>>().Object;
-            var mock = new Mock<UserManager<User>>(userStore, null, null, null, null, null,null, null, null);
+            var mock = new Mock<UserManager<User>>(userStore, null, null, null, null, null, null, null, null);
 
             var dbUsers = dbContext.Users;
 

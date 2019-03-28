@@ -71,7 +71,7 @@ namespace OnlineStore.Web.Mapping
 
             //--------------------------------------------------------------------------------------------------------
 
-            this.CreateMap<User, UsersViewModel>()
+            this.CreateMap<User, UserViewModel>()
                 .ForMember(dest => dest.OrdersCount, opt => opt.MapFrom(src => src.Orders.Count));
 
             this.CreateMap<PersonInfoBindingModel, User>()

@@ -24,7 +24,7 @@ namespace OnlineStore.Services.Tests.AdminTests.AdminServiceTests
         [Fact]
         public void WithTwoNewUsers_ShouldReturnModelWithCorrectNewUsersCount()
         {
-            var todayDateTime = DateTime.Now;
+            var todayDateTime = DateTime.UtcNow;
 
             var dbUser1 = new User()
             {
@@ -72,7 +72,7 @@ namespace OnlineStore.Services.Tests.AdminTests.AdminServiceTests
         [Fact]
         public void WithTwoNewOrders_ShouldReturnModelWithCorrectNewOrdersCount()
         {
-            var todayDateTime = DateTime.Now;
+            var todayDateTime = DateTime.UtcNow;
 
             var dbOrder1 = new Order()
             {

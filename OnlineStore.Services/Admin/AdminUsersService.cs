@@ -1,7 +1,6 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Query;
 using OnlineStore.Common.Constants;
 using OnlineStore.Data;
 using OnlineStore.Models;
@@ -27,9 +26,9 @@ namespace OnlineStore.Services.Admin
             this.userManager = userManager;
         }
 
-        public async Task<IEnumerable<UsersViewModel>> PrepareModelForEditingAsync()
+        public async Task<IEnumerable<UserViewModel>> PrepareModelForEditingAsync()
         {
-            var dbUsers = await GetUsersFromDatabase(false);
+            var dbUsers = await GetUsersFromDatabase();
 
             var models = MapUsersViewModels(dbUsers);
 
@@ -93,16 +92,13 @@ namespace OnlineStore.Services.Admin
             return await this.userManager.DeleteAsync(dbUser);
         }
 
-        private async Task<IEnumerable<User>> GetUsersFromDatabase(bool includeAdmin)
+        private async Task<IEnumerable<User>> GetUsersFromDatabase()
         {
             var dbUsers = this.DbContext.Users
                 .Include(u => u.Orders)
                 .ToList();
 
-            if (includeAdmin == false)
-            {
-                await FilterAdmin(dbUsers);
-            }
+            await FilterAdmin(dbUsers);
 
             return dbUsers;
         }
@@ -120,15 +116,15 @@ namespace OnlineStore.Services.Admin
             }
         }
 
-        private IEnumerable<UsersViewModel> MapUsersViewModels(IEnumerable<User> users)
+        private IEnumerable<UserViewModel> MapUsersViewModels(IEnumerable<User> users)
         {
-            var models = new List<UsersViewModel>();
+            var models = new List<UserViewModel>();
 
             foreach (var user in users)
             {
                 var isBanned = user.LockoutEnd > DateTime.UtcNow;
 
-                var model = this.mapper.Map<UsersViewModel>(user);
+                var model = this.mapper.Map<UserViewModel>(user);
                 model.IsBanned = isBanned;
 
                 models.Add(model);

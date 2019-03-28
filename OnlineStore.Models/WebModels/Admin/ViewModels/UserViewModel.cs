@@ -1,6 +1,6 @@
 ﻿namespace OnlineStore.Models.WebModels.Admin.ViewModels
 {
-    public class UsersViewModel
+    public class UserViewModel
     {
         public string Id { get; set; }
 
