@@ -60,7 +60,7 @@ namespace OnlineStore.Web.Areas.Admin.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> AddSubcategory(SubCategoryBindingCategory model)
+        public async Task<IActionResult> AddSubcategory(SubCategoryCategoryBindingModel model)
         {
             if (ModelState.IsValid == false)
             {

@@ -1,4 +1,6 @@
 ﻿using OnlineStore.Models;
+using OnlineStore.Models.WebModels.Admin.ViewModels;
+using System.Collections.Generic;
 using System.Linq;
 using Xunit;
 
@@ -9,14 +11,10 @@ namespace OnlineStore.Services.Tests.AdminTests.AdminCategoriesServiceTests
         [Fact]
         public void WithOneCategory_ShouldReturnCorrectCategoriesCount()
         {
-            var dbContext = this.GetDbContext();
             var dbCategory = new Category();
-            dbContext.Categories.Add(dbCategory);
-            dbContext.SaveChanges();
 
-            var service = this.GetService(dbContext);
-
-            var categoriesCount = service.GetAllCategories().Count;
+            var categoryModels = this.CallGetAllCategories(dbCategory);
+            var categoriesCount = categoryModels.Count;
 
             Assert.Equal(1, categoriesCount);
         }
@@ -36,15 +34,12 @@ namespace OnlineStore.Services.Tests.AdminTests.AdminCategoriesServiceTests
         [Fact]
         public void WithOneCategoryWithId_ShouldReturnModelWithCorrectCategoryId()
         {
-            var dbContext = this.GetDbContext();
             var dbCategory = new Category();
-            dbContext.Categories.Add(dbCategory);
-            dbContext.SaveChanges();
 
-            var service = this.GetService(dbContext);
+            var categoryModels = this.CallGetAllCategories(dbCategory);
 
             var dbCategoryId = dbCategory.Id;
-            var firstCategoryModel = service.GetAllCategories().First();
+            var firstCategoryModel = categoryModels.First();
             var modelCategoryId = firstCategoryModel.CategoryId;
 
             Assert.Equal(dbCategoryId, modelCategoryId);
@@ -54,14 +49,11 @@ namespace OnlineStore.Services.Tests.AdminTests.AdminCategoriesServiceTests
         [InlineData("Category")]
         public void WithOneCategoryWithName_ShouldReturnModelWithCorrectCategoryName(string categoryName)
         {
-            var dbContext = this.GetDbContext();
             var dbCategory = this.CreateCategory(categoryName);
-            dbContext.Categories.Add(dbCategory);
-            dbContext.SaveChanges();
 
-            var service = this.GetService(dbContext);
+            var categoryModels = this.CallGetAllCategories(dbCategory);
 
-            var firstCategoryModel = service.GetAllCategories().First();
+            var firstCategoryModel = categoryModels.First();
             var modelCategoryName = firstCategoryModel.Name;
 
             Assert.Equal(categoryName, modelCategoryName);
@@ -70,14 +62,11 @@ namespace OnlineStore.Services.Tests.AdminTests.AdminCategoriesServiceTests
         [Fact]
         public void WithoutProducts_ShouldReturnZeroTotalProductsCount()
         {
-            var dbContext = this.GetDbContext();
             var dbCategory = new Category();
-            dbContext.Categories.Add(dbCategory);
-            dbContext.SaveChanges();
 
-            var service = this.GetService(dbContext);
+            var categoryModels = this.CallGetAllCategories(dbCategory);
 
-            var firstCategoryModel = service.GetAllCategories().First();
+            var firstCategoryModel = categoryModels.First();
             var modelProductCount = firstCategoryModel.TotalProductsCount;
 
             Assert.Equal(0, modelProductCount);
@@ -86,21 +75,17 @@ namespace OnlineStore.Services.Tests.AdminTests.AdminCategoriesServiceTests
         [Fact]
         public void WithTwoProducts_ShouldReturnCorrectTotalProductsCount()
         {
-            var dbContext = this.GetDbContext();
             var dbCategory = new Category();
             var dbProduct = new Product();
             var dbProduct2 = new Product();
             var dbSubCategory = new SubCategory();
-
             dbSubCategory.Products.Add(dbProduct);
             dbSubCategory.Products.Add(dbProduct2);
             dbCategory.SubCategories.Add(dbSubCategory);
-            dbContext.Categories.Add(dbCategory);
-            dbContext.SaveChanges();
 
-            var service = this.GetService(dbContext);
+            var categoryModels = this.CallGetAllCategories(dbCategory);
 
-            var firstCategoryModel = service.GetAllCategories().First();
+            var firstCategoryModel = categoryModels.First();
             var modelProductCount = firstCategoryModel.TotalProductsCount;
 
             Assert.Equal(2, modelProductCount);
@@ -109,14 +94,11 @@ namespace OnlineStore.Services.Tests.AdminTests.AdminCategoriesServiceTests
         [Fact]
         public void WithoutSubcategories_ShouldReturnZeroSubCategoriesCount()
         {
-            var dbContext = this.GetDbContext();
             var dbCategory = new Category();
-            dbContext.Categories.Add(dbCategory);
-            dbContext.SaveChanges();
 
-            var service = this.GetService(dbContext);
+            var categoryModels = this.CallGetAllCategories(dbCategory);
 
-            var firstCategoryModel = service.GetAllCategories().First();
+            var firstCategoryModel = categoryModels.First();
             var modelSubCategory = firstCategoryModel.SubCategories;
             var modelSubCategoriesCount = modelSubCategory.Count;
 
@@ -126,18 +108,15 @@ namespace OnlineStore.Services.Tests.AdminTests.AdminCategoriesServiceTests
         [Fact]
         public void WithTwoSubcategories_ShouldReturnCorrectSubCategoriesCount()
         {
-            var dbContext = this.GetDbContext();
             var dbCategory = new Category();
             var dbSubCategory1 = new SubCategory();
             var dbSubCategory2 = new SubCategory();
             dbCategory.SubCategories.Add(dbSubCategory1);
             dbCategory.SubCategories.Add(dbSubCategory2);
-            dbContext.Categories.Add(dbCategory);
-            dbContext.SaveChanges();
 
-            var service = this.GetService(dbContext);
+            var categoryModels = this.CallGetAllCategories(dbCategory);
 
-            var firstCategoryModel = service.GetAllCategories().First();
+            var firstCategoryModel = categoryModels.First();
             var modelSubCategories = firstCategoryModel.SubCategories;
             var modelSubcategoriesCount = modelSubCategories.Count;
 
@@ -147,17 +126,13 @@ namespace OnlineStore.Services.Tests.AdminTests.AdminCategoriesServiceTests
         [Fact]
         public void WithOneSubcategoryWithId_ShouldReturnModelWithCorrectSubCategoryId()
         {
-            var dbContext = this.GetDbContext();
             var dbCategory = new Category();
             var dbSubCategory = new SubCategory();
-
             dbCategory.SubCategories.Add(dbSubCategory);
-            dbContext.Categories.Add(dbCategory);
-            dbContext.SaveChanges();
 
-            var service = this.GetService(dbContext);
+            var categoryModels = this.CallGetAllCategories(dbCategory);
 
-            var firstCategoryModel = service.GetAllCategories().First();
+            var firstCategoryModel = categoryModels.First();
             var modelFirstSubcategory = firstCategoryModel.SubCategories.First();
             var modelFirstSubcategoryId = modelFirstSubcategory.Id;
 
@@ -168,20 +143,30 @@ namespace OnlineStore.Services.Tests.AdminTests.AdminCategoriesServiceTests
         [InlineData("SubCategory")]
         public void WithOneSubcategoryWithName_ShouldReturnModelWithCorrectSubCategoryName(string subCategoryName)
         {
-            var dbContext = this.GetDbContext();
             var dbCategory = new Category();
             var dbSubCategory = this.CreateSubcategory(subCategoryName);
             dbCategory.SubCategories.Add(dbSubCategory);
-            dbContext.Categories.Add(dbCategory);
-            dbContext.SaveChanges();
 
-            var service = this.GetService(dbContext);
+            var categoryModels = this.CallGetAllCategories(dbCategory);
 
-            var firstCategoryModel = service.GetAllCategories().First();
+            var firstCategoryModel = categoryModels.First();
             var modelFirstSubCategory = firstCategoryModel.SubCategories.First();
             var modelFirstSubCategoryName = modelFirstSubCategory.Name;
 
             Assert.Equal(subCategoryName, modelFirstSubCategoryName);
+        }
+
+        private IList<CategoryViewModel> CallGetAllCategories(Category category)
+        {
+            var dbContext = this.GetDbContext();
+            dbContext.Categories.Add(category);
+            dbContext.SaveChanges();
+
+            var service = this.GetService(dbContext);
+
+            var categoryModels = service.GetAllCategories();
+
+            return categoryModels;
         }
 
         private Product CreateProduct(string name)

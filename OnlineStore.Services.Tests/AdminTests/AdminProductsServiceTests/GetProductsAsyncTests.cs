@@ -1,7 +1,5 @@
-﻿using OnlineStore.Data;
-using OnlineStore.Models;
+﻿using OnlineStore.Models;
 using OnlineStore.Models.WebModels.Admin.ViewModels;
-using OnlineStore.Services.Admin.Interfaces;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -42,11 +40,10 @@ namespace OnlineStore.Services.Tests.AdminTests.AdminProductsServiceTests
         [Fact]
         public async Task WithCorrectSubcategoryIdAndOneProductWithId_ShouldReturnModelWithCorrectId()
         {
-            var dbContext = this.GetDbContext();
             var dbSubCategory = new SubCategory();
             var dbProduct = new Product();
 
-            var productModels = await this.GetProductModelsFromService(dbContext, dbSubCategory, dbProduct);
+            var productModels = await this.CallGetProductsAsync(dbSubCategory, dbProduct);
             var firstProductModel = productModels.First();
             var firstProductModelId = firstProductModel.Id;
             var dbProductId = dbProduct.Id;
@@ -58,14 +55,13 @@ namespace OnlineStore.Services.Tests.AdminTests.AdminProductsServiceTests
         [InlineData("ProductName")]
         public async Task WithCorrectSubcategoryIdAndOneProductWithName_ShouldReturnModelWithCorrectName(string productName)
         {
-            var dbContext = this.GetDbContext();
             var dbSubCategory = new SubCategory();
             var dbProduct = new Product()
             {
                 Name = productName
             };
 
-            var productModels = await this.GetProductModelsFromService(dbContext, dbSubCategory, dbProduct);
+            var productModels = await this.CallGetProductsAsync(dbSubCategory, dbProduct);
             var firstProductModel = productModels.First();
             var firstProductModelName = firstProductModel.Name;
 
@@ -76,14 +72,13 @@ namespace OnlineStore.Services.Tests.AdminTests.AdminProductsServiceTests
         [InlineData(5)]
         public async Task WithCorrectSubcategoryIdAndOneProductWithPrice_ShouldReturnModelWithCorrectPrice(decimal productPrice)
         {
-            var dbContext = this.GetDbContext();
             var dbSubCategory = new SubCategory();
             var dbProduct = new Product()
             {
                 Price = productPrice
             };
 
-            var productModels = await this.GetProductModelsFromService(dbContext, dbSubCategory, dbProduct);
+            var productModels = await this.CallGetProductsAsync(dbSubCategory, dbProduct);
             var firstProductModel = productModels.First();
             var firstProductModelPrice = firstProductModel.Price;
 
@@ -93,11 +88,10 @@ namespace OnlineStore.Services.Tests.AdminTests.AdminProductsServiceTests
         [Fact]
         public async Task WithCorrectSubcategoryIdAndOneProductWithoutPromoPrice_ShouldReturnModelWithNullPromoPrice()
         {
-            var dbContext = this.GetDbContext();
             var dbSubCategory = new SubCategory();
             var dbProduct = new Product();
 
-            var productModels = await this.GetProductModelsFromService(dbContext, dbSubCategory, dbProduct);
+            var productModels = await this.CallGetProductsAsync(dbSubCategory, dbProduct);
             var firstProductModel = productModels.First();
             var firstProductModelPromoPrice = firstProductModel.PromoPrice;
 
@@ -109,14 +103,13 @@ namespace OnlineStore.Services.Tests.AdminTests.AdminProductsServiceTests
         public async Task WithCorrectSubcategoryIdAndOneProductWithPromoPrice_ShouldReturnModelWithCorrectPromoPrice(
             decimal promoPrice)
         {
-            var dbContext = this.GetDbContext();
             var dbSubCategory = new SubCategory();
             var dbProduct = new Product()
             {
                 PromoPrice = promoPrice
             };
 
-            var productModels = await this.GetProductModelsFromService(dbContext, dbSubCategory, dbProduct);
+            var productModels = await this.CallGetProductsAsync(dbSubCategory, dbProduct);
             var firstProductModel = productModels.First();
             var firstProductModelPromoPrice = firstProductModel.PromoPrice;
 
@@ -128,14 +121,13 @@ namespace OnlineStore.Services.Tests.AdminTests.AdminProductsServiceTests
         public async Task WithCorrectSubcategoryIdAndOneProductWithCountsLeft_ShouldReturnModelWithCorrectCountsLeft(
             int countsLeft)
         {
-            var dbContext = this.GetDbContext();
             var dbSubCategory = new SubCategory();
             var dbProduct = new Product()
             {
                 CountsLeft = countsLeft
             };
 
-            var productModels = await this.GetProductModelsFromService(dbContext, dbSubCategory, dbProduct);
+            var productModels = await this.CallGetProductsAsync(dbSubCategory, dbProduct);
             var firstProductModel = productModels.First();
             var firstProductModelCountsLeft = firstProductModel.CountsLeft;
 
@@ -145,11 +137,10 @@ namespace OnlineStore.Services.Tests.AdminTests.AdminProductsServiceTests
         [Fact]
         public async Task WithCorrectSubcategoryIdAndOneProductWithoutOrders_ShouldReturnModelWithZeroOrdersCount()
         {
-            var dbContext = this.GetDbContext();
             var dbSubCategory = new SubCategory();
             var dbProduct = new Product();
 
-            var productModels = await this.GetProductModelsFromService(dbContext, dbSubCategory, dbProduct);
+            var productModels = await this.CallGetProductsAsync(dbSubCategory, dbProduct);
             var firstProductModel = productModels.First();
             var firstProductModelOrdersCount = firstProductModel.OrdersCount;
 
@@ -162,7 +153,6 @@ namespace OnlineStore.Services.Tests.AdminTests.AdminProductsServiceTests
         public async Task WithCorrectSubcategoryIdAndOneProductWithOrderWithOrderCount_ShouldReturnModelWithCorrectOrdersCount(
             int orderCount)
         {
-            var dbContext = this.GetDbContext();
             var dbSubCategory = new SubCategory();
             var dbOrderProduct = new OrderProduct()
             {
@@ -171,7 +161,7 @@ namespace OnlineStore.Services.Tests.AdminTests.AdminProductsServiceTests
             var dbProduct = new Product();
             dbProduct.Orders.Add(dbOrderProduct);
 
-            var productModels = await this.GetProductModelsFromService(dbContext, dbSubCategory, dbProduct);
+            var productModels = await this.CallGetProductsAsync(dbSubCategory, dbProduct);
             var firstProductModel = productModels.First();
             var firstProductModelOrdersCount = firstProductModel.OrdersCount;
 
@@ -183,25 +173,22 @@ namespace OnlineStore.Services.Tests.AdminTests.AdminProductsServiceTests
         public async Task WithCorrectSubcategoryIdAndNameAndOneProduct_ShouldReturnModelWithCorrectSubCategoryName(
             string subCategoryName)
         {
-            var dbContext = this.GetDbContext();
             var dbSubCategory = new SubCategory()
             {
                 Name = subCategoryName
             };
             var dbProduct = new Product();
 
-            var productModels = await this.GetProductModelsFromService(dbContext, dbSubCategory, dbProduct);
+            var productModels = await this.CallGetProductsAsync(dbSubCategory, dbProduct);
             var firstProductModel = productModels.First();
             var firstProductModelSubCategoryName = firstProductModel.SubCategoryName;
 
             Assert.Equal(subCategoryName, firstProductModelSubCategoryName);
         }
-
-        private async Task<IEnumerable<ProductViewModel>> GetProductModelsFromService(
-            OnlineStoreDbContext dbContext,
-            SubCategory subCateogory,
-            Product product)
+        
+        private async Task<IEnumerable<ProductViewModel>> CallGetProductsAsync(SubCategory subCateogory, Product product)
         {
+            var dbContext = this.GetDbContext();
             subCateogory.Products.Add(product);
             dbContext.SubCategories.Add(subCateogory);
             dbContext.SaveChanges();

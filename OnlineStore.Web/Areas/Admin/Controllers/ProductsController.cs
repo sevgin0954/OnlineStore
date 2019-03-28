@@ -53,7 +53,7 @@ namespace OnlineStore.Web.Areas.Admin.Controllers
                 return this.Redirect("Add");
             }
 
-            await this.productsServices.AddProduct(model);
+            await this.productsServices.AddProductAsync(model);
 
             this.AddStatusMessage(ControllerConstats.MessageSuccefullyAdded, ControllerConstats.MessageTypeSuccess);
 

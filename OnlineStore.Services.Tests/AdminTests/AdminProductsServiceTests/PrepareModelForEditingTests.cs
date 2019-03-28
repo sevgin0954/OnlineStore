@@ -23,15 +23,10 @@ namespace OnlineStore.Services.Tests.AdminTests.AdminProductsServiceTests
         [Fact]
         public async Task WithCorrectProductId_ShouldReturnModelWithCorrectProductId()
         {
-            var dbContext = this.GetDbContext();
             var dbProduct = new Product();
-            dbContext.Products.Add(dbProduct);
-            dbContext.SaveChanges();
 
-            var service = this.GetService(dbContext);
-
+            var productModel = await this.CallPreparedModelForEditingAsync(dbProduct);
             var dbProductId = dbProduct.Id;
-            var productModel = await service.PrepareModelForEditingAsync(dbProductId);
             var productModelId = productModel.ProductId;
 
             Assert.Equal(dbProductId, productModelId);
@@ -40,11 +35,11 @@ namespace OnlineStore.Services.Tests.AdminTests.AdminProductsServiceTests
         [Fact]
         public async Task WithCorrectProductId_ShouldReturnModelWithCorrectSubCategoryId()
         {
-            var dbContext = this.GetDbContext();
             var dbProduct = new Product();
             var dbSubCategory = new SubCategory();
+            dbProduct.SubCategory = dbSubCategory;
 
-            var productModel = await this.GetPreparedModelForEditingAsync(dbContext, dbProduct, dbSubCategory);
+            var productModel = await this.CallPreparedModelForEditingAsync(dbProduct);
             var productModelSubCategoryId = productModel.SubCategoryId;
             var dbSubCategoryId = dbSubCategory.Id;
 
@@ -55,14 +50,14 @@ namespace OnlineStore.Services.Tests.AdminTests.AdminProductsServiceTests
         [InlineData("SubCategoryName")]
         public async Task WithCorrectProductId_ShouldReturnModelWithCorrectSubCategoryName(string subCategoryName)
         {
-            var dbContext = this.GetDbContext();
             var dbProduct = new Product();
             var dbSubCategory = new SubCategory()
             {
                 Name = subCategoryName
             };
+            dbProduct.SubCategory = dbSubCategory;
 
-            var productModel = await this.GetPreparedModelForEditingAsync(dbContext, dbProduct, dbSubCategory);
+            var productModel = await this.CallPreparedModelForEditingAsync(dbProduct);
             var productModelSubCategoryName = productModel.SubCategoryName;
 
             Assert.Equal(subCategoryName, productModelSubCategoryName);
@@ -72,17 +67,12 @@ namespace OnlineStore.Services.Tests.AdminTests.AdminProductsServiceTests
         [InlineData("ProductName")]
         public async Task WithCorrectProductId_ShouldReturnModelWithCorrectProductName(string productName)
         {
-            var dbContext = this.GetDbContext();
             var dbProduct = new Product()
             {
                 Name = productName
             };
-            dbContext.Products.Add(dbProduct);
-            dbContext.SaveChanges();
 
-            var service = this.GetService(dbContext);
-
-            var productModel = await service.PrepareModelForEditingAsync(dbProduct.Id);
+            var productModel = await this.CallPreparedModelForEditingAsync(dbProduct);
             var productModelProductName = productModel.ProductName;
 
             Assert.Equal(productName, productModelProductName);
@@ -92,17 +82,12 @@ namespace OnlineStore.Services.Tests.AdminTests.AdminProductsServiceTests
         [InlineData(5)]
         public async Task WithCorrectProductId_ShouldReturnModelWithCorrectPrice(decimal price)
         {
-            var dbContext = this.GetDbContext();
             var dbProduct = new Product()
             {
                 Price = price
             };
-            dbContext.Products.Add(dbProduct);
-            dbContext.SaveChanges();
 
-            var service = this.GetService(dbContext);
-
-            var productModel = await service.PrepareModelForEditingAsync(dbProduct.Id);
+            var productModel = await this.CallPreparedModelForEditingAsync(dbProduct);
             var productModelPrice = productModel.Price;
 
             Assert.Equal(price, productModelPrice);
@@ -111,14 +96,9 @@ namespace OnlineStore.Services.Tests.AdminTests.AdminProductsServiceTests
         [Fact]
         public async Task WithCorrectProductIdAndWithoutPromoPrice_ShouldReturnModelNullPromoPrice()
         {
-            var dbContext = this.GetDbContext();
             var dbProduct = new Product();
-            dbContext.Products.Add(dbProduct);
-            dbContext.SaveChanges();
 
-            var service = this.GetService(dbContext);
-
-            var productModel = await service.PrepareModelForEditingAsync(dbProduct.Id);
+            var productModel = await this.CallPreparedModelForEditingAsync(dbProduct);
             var productModelPromoPrice = productModel.PromoPrice;
 
             Assert.Null(productModelPromoPrice);
@@ -128,17 +108,12 @@ namespace OnlineStore.Services.Tests.AdminTests.AdminProductsServiceTests
         [InlineData(5)]
         public async Task WithCorrectProductId_ShouldReturnModelWithCorrectPromoPrice(decimal promoPrice)
         {
-            var dbContext = this.GetDbContext();
             var dbProduct = new Product()
             {
                 PromoPrice = promoPrice
             };
-            dbContext.Products.Add(dbProduct);
-            dbContext.SaveChanges();
 
-            var service = this.GetService(dbContext);
-
-            var productModel = await service.PrepareModelForEditingAsync(dbProduct.Id);
+            var productModel = await this.CallPreparedModelForEditingAsync(dbProduct);
             var productModelPromoPrice = productModel.PromoPrice;
 
             Assert.Equal(promoPrice, productModelPromoPrice);
@@ -148,17 +123,12 @@ namespace OnlineStore.Services.Tests.AdminTests.AdminProductsServiceTests
         [InlineData(5)]
         public async Task WithCorrectProductId_ShouldReturnModelWithCorrectCountsLeft(int countsLeft)
         {
-            var dbContext = this.GetDbContext();
             var dbProduct = new Product()
             {
                 CountsLeft = countsLeft
             };
-            dbContext.Products.Add(dbProduct);
-            dbContext.SaveChanges();
 
-            var service = this.GetService(dbContext);
-
-            var productModel = await service.PrepareModelForEditingAsync(dbProduct.Id);
+            var productModel = await this.CallPreparedModelForEditingAsync(dbProduct);
             var productModelCountsLeft = productModel.CountsLeft;
 
             Assert.Equal(countsLeft, productModelCountsLeft);
@@ -168,49 +138,36 @@ namespace OnlineStore.Services.Tests.AdminTests.AdminProductsServiceTests
         [InlineData("description")]
         public async Task WithCorrectProductId_ShouldReturnModelWithCorrectDescription(string description)
         {
-            var dbContext = this.GetDbContext();
             var dbProduct = new Product()
             {
                 Description = description
             };
-            dbContext.Products.Add(dbProduct);
-            dbContext.SaveChanges();
 
-            var service = this.GetService(dbContext);
-
-            var productModel = await service.PrepareModelForEditingAsync(dbProduct.Id);
+            var productModel = await this.CallPreparedModelForEditingAsync(dbProduct);
             var productModelDescription = productModel.Description;
 
             Assert.Equal(description, productModelDescription);
         }
 
         [Theory]
-        [InlineData("specification")]
+        [InlineData("Specification")]
         public async Task WithCorrectProductId_ShouldReturnModelWithCorrectSpecifications(string specification)
         {
-            var dbContext = this.GetDbContext();
             var dbProduct = new Product()
             {
                 Specifications = specification
             };
-            dbContext.Products.Add(dbProduct);
-            dbContext.SaveChanges();
 
-            var service = this.GetService(dbContext);
-
-            var productModel = await service.PrepareModelForEditingAsync(dbProduct.Id);
+            var productModel = await this.CallPreparedModelForEditingAsync(dbProduct);
             var productModelSpecifications = productModel.Specifications;
 
             Assert.Equal(specification, productModelSpecifications);
         }
 
-        private async Task<ProductBindingModel> GetPreparedModelForEditingAsync(
-            OnlineStoreDbContext dbContext,
-            Product product,
-            SubCategory subCategory)
+        private async Task<ProductBindingModel> CallPreparedModelForEditingAsync(Product product)
         {
-            subCategory.Products.Add(product);
-            dbContext.SubCategories.Add(subCategory);
+            var dbContext = this.GetDbContext();
+            dbContext.Products.Add(product);
             dbContext.SaveChanges();
 
             var service = this.GetService(dbContext);

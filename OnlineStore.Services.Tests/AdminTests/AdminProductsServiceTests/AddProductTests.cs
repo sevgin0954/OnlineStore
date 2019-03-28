@@ -1,25 +1,21 @@
-﻿using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Http.Internal;
+﻿using OnlineStore.Data;
 using OnlineStore.Models;
 using OnlineStore.Models.WebModels.Admin.BindingModels;
-using System;
-using System.IO;
 using System.Linq;
+using System.Threading.Tasks;
 using Xunit;
-using static System.Net.Mime.MediaTypeNames;
 
 namespace OnlineStore.Services.Tests.AdminTests.AdminProductsServiceTests
 {
     public class AddProductTests : BaseAdminProductsServiceTest
     {
         [Fact]
-        public void WithModel_ShouldAddNewProductToDatabase()
+        public async Task WithModel_ShouldAddNewProductToDatabase()
         {
             var dbContext = this.GetDbContext();
-            var service = this.GetService(dbContext);
             var model = new ProductBindingModel();
 
-            service.AddProduct(model);
+            await this.CallAddProductAsync(dbContext, model);
             var dbProducts = dbContext.Products;
             var dbProductsCount = dbProducts.Count();
 
@@ -27,7 +23,7 @@ namespace OnlineStore.Services.Tests.AdminTests.AdminProductsServiceTests
         }
 
         [Fact]
-        public void WithModelWithSubCategoryId_ShouldAddNewProductToDatabaseWithCorrectSubCategoryId()
+        public async Task WithModelWithSubCategoryId_ShouldAddNewProductToDatabaseWithCorrectSubCategoryId()
         {
             var dbContext = this.GetDbContext();
             var dbSubCategory = new SubCategory();
@@ -38,9 +34,8 @@ namespace OnlineStore.Services.Tests.AdminTests.AdminProductsServiceTests
             {
                 SubCategoryId = dbSubCategory.Id
             };
-            var service = this.GetService(dbContext);
 
-            service.AddProduct(model);
+            await this.CallAddProductAsync(dbContext, model);
             var dbFirstProduct = dbContext.Products.First();
             var dbProductSubCategoryId = dbFirstProduct.SubCategoryId;
             var modelSubCategoryId = model.SubCategoryId;
@@ -50,16 +45,15 @@ namespace OnlineStore.Services.Tests.AdminTests.AdminProductsServiceTests
 
         [Theory]
         [InlineData("ProductName")]
-        public void WithModelWithProductName_ShouldAddNewProductToDatabaseWithCorrectProductName(string productName)
+        public async Task WithModelWithProductName_ShouldAddNewProductToDatabaseWithCorrectProductName(string productName)
         {
             var dbContext = this.GetDbContext();
             var model = new ProductBindingModel()
             {
                 ProductName = productName
             };
-            var service = this.GetService(dbContext);
 
-            service.AddProduct(model);
+            await this.CallAddProductAsync(dbContext, model);
             var dbFirstProduct = dbContext.Products.First();
             var dbProductName = dbFirstProduct.Name;
 
@@ -68,16 +62,15 @@ namespace OnlineStore.Services.Tests.AdminTests.AdminProductsServiceTests
 
         [Theory]
         [InlineData(5)]
-        public void WithModelWithPrice_ShouldAddNewProductToDatabaseWithCorrectPrice(decimal price)
+        public async Task WithModelWithPrice_ShouldAddNewProductToDatabaseWithCorrectPrice(decimal price)
         {
             var dbContext = this.GetDbContext();
             var model = new ProductBindingModel()
             {
                 Price = price
             };
-            var service = this.GetService(dbContext);
 
-            service.AddProduct(model);
+            await this.CallAddProductAsync(dbContext, model);
             var dbFirstProduct = dbContext.Products.First();
             var dbProductPrice = dbFirstProduct.Price;
 
@@ -86,48 +79,45 @@ namespace OnlineStore.Services.Tests.AdminTests.AdminProductsServiceTests
 
         [Theory]
         [InlineData(5)]
-        public void WithModelWithPromoPrice_ShouldAddNewProductToDatabaseWithCorrectPromoPrice(decimal promoPrice)
+        public async Task WithModelWithPromoPrice_ShouldAddNewProductToDatabaseWithCorrectPromoPrice(decimal promoPrice)
         {
             var dbContext = this.GetDbContext();
             var model = new ProductBindingModel()
             {
                 PromoPrice = promoPrice
             };
-            var service = this.GetService(dbContext);
 
-            service.AddProduct(model);
+            await this.CallAddProductAsync(dbContext, model);
             var dbFirstProduct = dbContext.Products.First();
             var dbProductPromoPrice = dbFirstProduct.PromoPrice;
 
             Assert.Equal(promoPrice, dbProductPromoPrice);
         }
-
+        
         [Fact]
-        public void WithModelWithoutPromoPrice_ShouldAddNewProductToDatabaseWithNullPromoPrice()
+        public async Task WithModelWithoutPromoPrice_ShouldAddNewProductToDatabaseWithNullPromoPrice()
         {
             var dbContext = this.GetDbContext();
             var model = new ProductBindingModel();
-            var service = this.GetService(dbContext);
 
-            service.AddProduct(model);
+            await this.CallAddProductAsync(dbContext, model);
             var dbFirstProduct = dbContext.Products.First();
             var dbProductPromoPrice = dbFirstProduct.PromoPrice;
 
             Assert.Null(dbProductPromoPrice);
         }
-
+        
         [Theory]
         [InlineData(5)]
-        public void WithModelWithCountsLeft_ShouldAddNewProductToDatabaseWithCorrectCountsLeft(int coutsLeft)
+        public async Task WithModelWithCountsLeft_ShouldAddNewProductToDatabaseWithCorrectCountsLeft(int coutsLeft)
         {
             var dbContext = this.GetDbContext();
             var model = new ProductBindingModel()
             {
                 CountsLeft = coutsLeft
             };
-            var service = this.GetService(dbContext);
 
-            service.AddProduct(model);
+            await this.CallAddProductAsync(dbContext, model);
             var dbFirstProduct = dbContext.Products.First();
             var dbProductCountsLeft = dbFirstProduct.CountsLeft;
 
@@ -136,16 +126,15 @@ namespace OnlineStore.Services.Tests.AdminTests.AdminProductsServiceTests
 
         [Theory]
         [InlineData("Description")]
-        public void WithModelWithDescription_ShouldAddNewProductToDatabaseWithCorrectDescription(string description)
+        public async Task WithModelWithDescription_ShouldAddNewProductToDatabaseWithCorrectDescription(string description)
         {
             var dbContext = this.GetDbContext();
             var model = new ProductBindingModel()
             {
                 Description = description
             };
-            var service = this.GetService(dbContext);
 
-            service.AddProduct(model);
+            await this.CallAddProductAsync(dbContext, model);
             var dbFirstProduct = dbContext.Products.First();
             var dbProductDescription = dbFirstProduct.Description;
 
@@ -154,20 +143,27 @@ namespace OnlineStore.Services.Tests.AdminTests.AdminProductsServiceTests
 
         [Theory]
         [InlineData("Specifications")]
-        public void WithModelWithSpecifications_ShouldAddNewProductToDatabaseWithCorrectSpecifications(string specifications)
+        public async Task WithModelWithSpecifications_ShouldAddNewProductToDatabaseWithCorrectSpecifications(
+            string specifications)
         {
             var dbContext = this.GetDbContext();
             var model = new ProductBindingModel()
             {
                 Specifications = specifications
             };
-            var service = this.GetService(dbContext);
 
-            service.AddProduct(model);
+            await this.CallAddProductAsync(dbContext, model);
             var dbFirstProduct = dbContext.Products.First();
             var dbProductSpecifications = dbFirstProduct.Specifications;
 
             Assert.Equal(specifications, dbProductSpecifications);
+        }
+
+        private async Task CallAddProductAsync(OnlineStoreDbContext dbContext, ProductBindingModel model)
+        {
+            var service = this.GetService(dbContext);
+
+            await service.AddProductAsync(model);
         }
     }
 }

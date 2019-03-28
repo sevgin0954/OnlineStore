@@ -1,4 +1,5 @@
 ﻿using OnlineStore.Models;
+using OnlineStore.Models.WebModels.Admin.BindingModels;
 using Xunit;
 
 namespace OnlineStore.Services.Tests.AdminTests.AdminProductsServiceTests
@@ -21,15 +22,10 @@ namespace OnlineStore.Services.Tests.AdminTests.AdminProductsServiceTests
         [Fact]
         public void WithCorrectSubCategoryId_ShouldReturnModelWithCorrectSubCategoryId()
         {
-            var dbContext = this.GetDbContext();
             var dbSubCategory = new SubCategory();
-            dbContext.SubCategories.Add(dbSubCategory);
-            dbContext.SaveChanges();
 
-            var service = this.GetService(dbContext);
-
+            var model = this.CallPrepareModelForAdding(dbSubCategory);
             var dbSubCategoryId = dbSubCategory.Id;
-            var model = service.PrepareModelForAdding(dbSubCategoryId);
             var modelSubCategoryId = model.SubCategoryId;
 
             Assert.Equal(dbSubCategoryId, modelSubCategoryId);
@@ -39,21 +35,30 @@ namespace OnlineStore.Services.Tests.AdminTests.AdminProductsServiceTests
         [InlineData("SubCategoryName")]
         public void WithCorrectSubCategoryId_ShouldReturnModelWithCorrectSubCategoryName(string subCategoryName)
         {
-            var dbContext = this.GetDbContext();
             var dbSubCategory = new SubCategory()
             {
                 Name = subCategoryName
             };
-            dbContext.SubCategories.Add(dbSubCategory);
+
+            var model = this.CallPrepareModelForAdding(dbSubCategory);
+            var dbSubCategoryId = dbSubCategory.Id;
+            var modelSubCategoryName = model.SubCategoryName;
+
+            Assert.Equal(subCategoryName, modelSubCategoryName);
+        }
+
+        private ProductBindingModel CallPrepareModelForAdding(SubCategory subCategory)
+        {
+            var dbContext = this.GetDbContext();
+            dbContext.SubCategories.Add(subCategory);
             dbContext.SaveChanges();
 
             var service = this.GetService(dbContext);
 
-            var dbSubCategoryId = dbSubCategory.Id;
+            var dbSubCategoryId = subCategory.Id;
             var model = service.PrepareModelForAdding(dbSubCategoryId);
-            var modelSubCategoryName = model.SubCategoryName;
 
-            Assert.Equal(subCategoryName, modelSubCategoryName);
+            return model;
         }
     }
 }

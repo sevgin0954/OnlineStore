@@ -44,7 +44,7 @@ namespace OnlineStore.Services.Admin
             await this.DbContext.SaveChangesAsync();
         }
 
-        public async Task<SubCategoryBindingCategory> PrepareSubCategoryModelForAdding(string categoryId)
+        public async Task<SubCategoryCategoryBindingModel> PrepareSubCategoryModelForAdding(string categoryId)
         {
             var dbCategory = await this.DbContext.Categories
                 .FirstOrDefaultAsync(c => c.Id == categoryId);
@@ -54,7 +54,7 @@ namespace OnlineStore.Services.Admin
                 return null;
             }
 
-            var model = new SubCategoryBindingCategory()
+            var model = new SubCategoryCategoryBindingModel()
             {
                 CategoryId = categoryId, 
                 CategoryName = dbCategory.Name
@@ -63,7 +63,7 @@ namespace OnlineStore.Services.Admin
             return model;
         }
 
-        public async Task AddSubcategory(SubCategoryBindingCategory model)
+        public async Task AddSubcategory(SubCategoryCategoryBindingModel model)
         {
             var dbModel = new SubCategory()
             {

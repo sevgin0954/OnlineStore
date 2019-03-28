@@ -9,7 +9,7 @@ namespace OnlineStore.Services.Admin.Interfaces
     {
         ProductBindingModel PrepareModelForAdding(string subcategoryId);
 
-        Task AddProduct(ProductBindingModel model);
+        Task AddProductAsync(ProductBindingModel model);
 
         Task<IEnumerable<ProductViewModel>> GetProductsAsync(string subcategoryId);
 

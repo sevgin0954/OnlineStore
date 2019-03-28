@@ -39,13 +39,8 @@ namespace OnlineStore.Services.Tests.AdminTests.AdminOrderServiceTests
             var dbOrder = new Order();
             var dbOrderStatus = new OrderStatus();
             dbOrder.OrderStatus = dbOrderStatus;
-            dbContext.Orders.Add(dbOrder);
-            dbContext.SaveChanges();
-
-            var service = this.GetService(dbContext);
-
-            var dbOrderId = dbOrder.Id;
-            var result = await service.CancelOrderAsync(dbOrderId);
+            
+            var result = await this.CallCancelOrderAsync(dbContext, dbOrder);
 
             Assert.True(result);
         }
@@ -55,13 +50,8 @@ namespace OnlineStore.Services.Tests.AdminTests.AdminOrderServiceTests
         {
             var dbContext = this.GetDbContext();
             var dbOrder = this.CreateOrder(WebConstants.OrderStatusCanceled);
-            dbContext.Orders.Add(dbOrder);
-            dbContext.SaveChanges();
 
-            var service = this.GetService(dbContext);
-
-            var dbOrderId = dbOrder.Id;
-            var result = await service.CancelOrderAsync(dbOrderId);
+            var result = await this.CallCancelOrderAsync(dbContext, dbOrder);
 
             Assert.False(result);
         }
@@ -71,13 +61,8 @@ namespace OnlineStore.Services.Tests.AdminTests.AdminOrderServiceTests
         {
             var dbContext = this.GetDbContext();
             var dbOrder = this.CreateOrder(WebConstants.OrderStatusDelivered);
-            dbContext.Orders.Add(dbOrder);
-            dbContext.SaveChanges();
 
-            var service = this.GetService(dbContext);
-
-            var dbOrderId = dbOrder.Id;
-            var result = await service.CancelOrderAsync(dbOrderId);
+            var result = await this.CallCancelOrderAsync(dbContext, dbOrder);
 
             Assert.False(result);
         }
@@ -95,16 +80,10 @@ namespace OnlineStore.Services.Tests.AdminTests.AdminOrderServiceTests
             {
                 CountsLeft = initialProductCount
             };
-            var dbOrder = 
-                this.CreateOrder(WebConstants.OrderStatusOnTheWay, dbProduct, orderedProductsCount);
+            var dbOrder = this.CreateOrder(WebConstants.OrderStatusOnTheWay, dbProduct, orderedProductsCount);
 
-            dbContext.Orders.Add(dbOrder);
-            dbContext.SaveChanges();
-
-            var service = this.GetService(dbContext);
-
-            var dbOrderId = dbOrder.Id;
-            await service.CancelOrderAsync(dbOrderId);
+            await this.CallCancelOrderAsync(dbContext, dbOrder);
+            
             var expectedCount = initialProductCount + orderedProductsCount;
             var currentDbProductCount = dbProduct.CountsLeft;
 
@@ -116,15 +95,23 @@ namespace OnlineStore.Services.Tests.AdminTests.AdminOrderServiceTests
         {
             var dbContext = this.GetDbContext();
             var dbOrder = this.CreateOrder(WebConstants.OrderStatusOnTheWay);
-            dbContext.Orders.Add(dbOrder);
-            dbContext.SaveChanges();
 
-            var service = this.GetService(dbContext);
-            
-            await service.CancelOrderAsync(dbOrder.Id);
+            await this.CallCancelOrderAsync(dbContext, dbOrder);
+
             var currentDbOrderStatusName = dbOrder.OrderStatus.Name;
 
             Assert.Equal(WebConstants.OrderStatusCanceled, currentDbOrderStatusName);
+        }
+
+        private async Task<bool> CallCancelOrderAsync(OnlineStoreDbContext dbContext, Order order)
+        {
+            dbContext.Orders.Add(order);
+            dbContext.SaveChanges();
+
+            var service = this.GetService(dbContext);
+            var result = await service.CancelOrderAsync(order.Id);
+
+            return result;
         }
 
         private Order CreateOrder(string orderStatus)
@@ -141,11 +128,11 @@ namespace OnlineStore.Services.Tests.AdminTests.AdminOrderServiceTests
             return dbOrder;
         }
 
-        private Order CreateOrder(string orderStatus, Product product, int orderedProductsCount)
+        private Order CreateOrder(string orderStatusName, Product product, int orderedProductsCount)
         {
             var dbOrderStatus = new OrderStatus()
             {
-                Name = orderStatus
+                Name = orderStatusName
             };
             var dbOrderProduct = new OrderProduct()
             {

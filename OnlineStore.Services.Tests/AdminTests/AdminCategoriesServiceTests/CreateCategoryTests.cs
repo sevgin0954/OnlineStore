@@ -8,6 +8,18 @@ namespace OnlineStore.Services.Tests.AdminTests.AdminCategoriesServiceTests
 {
     public class CreateCategoryTests : BaseAdminCategoriesSeviceTest
     {
+        [Fact]
+        public void WithModelNull_ShouldThrowException()
+        {
+            var dbContext = this.GetDbContext();
+
+            var service = this.GetService(dbContext);
+
+            Func<Task> func = async () => await service.CreateCategoryAsync(null);
+
+            Assert.ThrowsAsync<NullReferenceException>(func);
+        }
+
         [Theory]
         [InlineData("categoryName")]
         public async Task WithModelWithName_ShouldCreateCategoryWithSameName(string categoryName)
@@ -24,18 +36,6 @@ namespace OnlineStore.Services.Tests.AdminTests.AdminCategoriesServiceTests
             var dbCategory = dbContext.Categories.First();
 
             Assert.Equal(categoryName, dbCategory.Name);
-        }
-
-        [Fact]
-        public void WithModelNull_ShouldThrowException()
-        {
-            var dbContext = this.GetDbContext();
-
-            var service = this.GetService(dbContext);
-
-            Func<Task> func = async () => await service.CreateCategoryAsync(null);
-
-            Assert.ThrowsAsync<NullReferenceException>(func);
         }
     }
 }

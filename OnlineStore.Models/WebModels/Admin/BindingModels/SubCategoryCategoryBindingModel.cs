@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace OnlineStore.Models.WebModels.Admin.BindingModels
 {
-    public class SubCategoryBindingCategory
+    public class SubCategoryCategoryBindingModel
     {
         [Required]
         public string CategoryId { get; set; }

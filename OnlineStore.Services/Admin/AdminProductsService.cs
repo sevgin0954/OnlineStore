@@ -37,7 +37,7 @@ namespace OnlineStore.Services.Admin
             return model;
         }
 
-        public async Task AddProduct(ProductBindingModel model)
+        public async Task AddProductAsync(ProductBindingModel model)
         {
             var dbModel = this.mapper.Map<Product>(model);
 
