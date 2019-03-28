@@ -104,13 +104,8 @@ namespace OnlineStore.Services.Admin
             return true;
         }
 
-        public async Task<bool> Delete(string productId)
+        public async Task<bool> DeleteAsync(string productId)
         {
-            if (productId == null)
-            {
-                return false;
-            }
-
             var product = await this.DbContext.Products
                 .Include(p => p.Photos)
                 .FirstOrDefaultAsync(p => p.Id == productId);

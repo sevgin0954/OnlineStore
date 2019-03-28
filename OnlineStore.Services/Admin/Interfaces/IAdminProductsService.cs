@@ -17,6 +17,6 @@ namespace OnlineStore.Services.Admin.Interfaces
 
         Task<bool> EditAsync(ProductBindingModel model, string productId);
 
-        Task<bool> Delete(string productId);
+        Task<bool> DeleteAsync(string productId);
     }
 }

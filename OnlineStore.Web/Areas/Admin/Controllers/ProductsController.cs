@@ -131,7 +131,13 @@ namespace OnlineStore.Web.Areas.Admin.Controllers
         [HttpPost]
         public async Task<IActionResult> Delete(string productId)
         {
-            var result = await this.productsServices.Delete(productId);
+            if (productId == null)
+            {
+                this.AddStatusMessage(ControllerConstats.ErrorMessageWrongId, ControllerConstats.MessageTypeDanger);
+                return RedirectToAction("Edit", new { productId });
+            }
+
+            var result = await this.productsServices.DeleteAsync(productId);
 
             if (result == false)
             {
