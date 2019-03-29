@@ -2,15 +2,15 @@
 {
     public class WebConstants
     {
-        public const string IdentityArea = "Identity";
+        public const string IdentityAreaName = "Identity";
 
-        public const string AdminArea = "Admin";
+        public const string AdminAreaName = "Admin";
 
-        public const string AdminRole = "Administrator";
+        public const string AdminRoleName = "Administrator";
 
-        public const string QuestArea = "Quest";
+        public const string QuestAreaName = "Quest";
 
-        public const string LecturerAreaRoles = "Administrator, Lecturer";
+        public const string LecturerAreaRolesNames = "Administrator, Lecturer";
 
         public const string ConnectionString = "OnlineStoreDbContextConnection";
 

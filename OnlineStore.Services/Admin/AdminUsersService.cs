@@ -49,7 +49,7 @@ namespace OnlineStore.Services.Admin
                 return result;
             }
 
-            if (await this.userManager.IsInRoleAsync(dbUser, WebConstants.AdminRole))
+            if (await this.userManager.IsInRoleAsync(dbUser, WebConstants.AdminRoleName))
             {
                 result = this.CreateIdentityError(ControllerConstats.ErrorMessageCantBanYourself);
 
@@ -82,9 +82,9 @@ namespace OnlineStore.Services.Admin
                 return result;
             }
 
-            if (await this.userManager.IsInRoleAsync(dbUser, WebConstants.AdminRole))
+            if (await this.userManager.IsInRoleAsync(dbUser, WebConstants.AdminRoleName))
             {
-                var result = CreateIdentityError(ControllerConstats.ErrorMessageCantDeleteYourself);
+                var result = CreateIdentityError(ControllerConstats.ErrorMessageCantDeleteAdmin);
 
                 return result;
             }
@@ -107,7 +107,7 @@ namespace OnlineStore.Services.Admin
         {
             foreach (var user in dbUsers)
             {
-                if (await this.userManager.IsInRoleAsync(user, WebConstants.AdminRole) == true)
+                if (await this.userManager.IsInRoleAsync(user, WebConstants.AdminRoleName) == true)
                 {
                     dbUsers.Remove(user);
 

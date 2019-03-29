@@ -12,7 +12,7 @@ namespace OnlineStore.Services.Tests.AdminTests.AdminOrderServiceTests
 
         public BaseAdminOrderServiceTest()
         {
-            this.mapper = CommonTest.GetAutoMapper();
+            this.mapper = CommonTestMethods.GetAutoMapper();
         }
 
         public IAdminOrderService GetService(OnlineStoreDbContext dbContext)

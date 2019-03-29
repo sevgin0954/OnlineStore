@@ -58,7 +58,7 @@ namespace OnlineStore.Services.Extensions
             this.orderStatusesNames.Add(WebConstants.OrderStatusCanceled);
             this.orderStatusesNames.Add(WebConstants.OrderStatusDelivered);
 
-            this.rolesNames.Add(WebConstants.AdminRole);
+            this.rolesNames.Add(WebConstants.AdminRoleName);
         }
 
         private void SeedDistricts()

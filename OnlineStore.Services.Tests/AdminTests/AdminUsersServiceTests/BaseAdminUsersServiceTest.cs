@@ -15,7 +15,7 @@ namespace OnlineStore.Services.Tests.AdminTests.AdminUsersServiceTests
 
         public BaseAdminUsersServiceTest()
         {
-            this.mapper = CommonTest.GetAutoMapper();
+            this.mapper = CommonTestMethods.GetAutoMapper();
         }
 
         public IAdminUsersService GetService(OnlineStoreDbContext dbContext, UserManager<User> userManager)

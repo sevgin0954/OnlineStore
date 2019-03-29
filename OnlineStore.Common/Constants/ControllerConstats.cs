@@ -24,7 +24,7 @@
 
         public const string ErrorMessageCantBanYourself = "Cant ban yourself !!!";
 
-        public const string ErrorMessageCantDeleteYourself = "Cant delete yourself !!!";
+        public const string ErrorMessageCantDeleteAdmin = "Cant delete admin !!!";
 
         public const string ErrorMessageWrongPictureFormat = "Only.jpeg allowed !!!";
 

@@ -1,7 +1,10 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using Moq;
+using OnlineStore.Common.Constants;
 using OnlineStore.Models;
+using OnlineStore.Services.Tests.Common;
 using System;
+using System.Linq;
 using System.Threading.Tasks;
 using Xunit;
 
@@ -33,8 +36,8 @@ namespace OnlineStore.Services.Tests.AdminTests.AdminUsersServiceTests
             var dbUserId = dbUser.Id;
 
             var mockedUserManager = this.GetMockedUserManager();
-            this.SetupUserManagerFindByIdAsyncMock(mockedUserManager, dbUser);
-            this.SetupUserManagerSetLockoutEndDateAsyncMock(mockedUserManager, dbUser);
+            CommonTestMethods.SetupUserManagerFindByIdAsyncMock(mockedUserManager, dbUser);
+            CommonTestMethods.SetupUserManagerSetLockoutEndDateAsyncWithEndDateMock(mockedUserManager, dbUser);
 
             var service = this.GetService(dbContext, mockedUserManager.Object);
 
@@ -43,16 +46,73 @@ namespace OnlineStore.Services.Tests.AdminTests.AdminUsersServiceTests
             Assert.True(result.Succeeded);
         }
 
-        private void SetupUserManagerFindByIdAsyncMock(Mock<UserManager<User>> mockedUserManager, User user)
+        [Fact]
+        public async Task WithAdminUserId_ShouldReturnIdentityResultWithCorrectDescription()
         {
-            mockedUserManager.Setup(um => um.FindByIdAsync(user.Id))
-                .Returns(Task.FromResult(user));
+            var dbContext = this.GetDbContext();
+            var dbUser = new User();
+            var dbRole = new IdentityRole()
+            {
+                Name = WebConstants.AdminRoleName
+            };
+            CommonTestMethods.AddRoleToUser(dbContext, dbUser, dbRole);
+
+            var mockedUserManager = this.GetMockedUserManager();
+            CommonTestMethods.SetupUserManagerFindByIdAsyncMock(mockedUserManager, dbUser);
+            CommonTestMethods.SetupUserManagerIsInRoleAsyncMock(mockedUserManager, dbUser, true);
+
+            var service = this.GetService(dbContext, mockedUserManager.Object);
+
+            var result = await service.ChangeStateAsync(dbUser.Id);
+            var resultFirstError = result.Errors.First();
+            var resultFirstErrorMessage = resultFirstError.Description;
+
+            Assert.Equal(ControllerConstats.ErrorMessageCantBanYourself, resultFirstErrorMessage);
         }
 
-        private void SetupUserManagerSetLockoutEndDateAsyncMock(Mock<UserManager<User>> mockedUserManager, User user)
+        [Fact]
+        public async Task WithBannedUserWithId_ShouldCallUnbanUser()
         {
-            mockedUserManager.Setup(um => um.SetLockoutEndDateAsync(user, It.IsAny<DateTimeOffset>()))
-                .Returns(Task.FromResult(IdentityResult.Success));
+            var dateTimeOffset = new DateTimeOffset(DateTime.UtcNow.AddDays(1));
+
+            var dbContext = this.GetDbContext();
+            var dbUser = new User()
+            {
+                LockoutEnd = dateTimeOffset
+            };
+            dbContext.Users.Add(dbUser);
+            dbContext.SaveChanges();
+
+            var mockedUserManager = this.GetMockedUserManager();
+            CommonTestMethods.SetupUserManagerFindByIdAsyncMock(mockedUserManager, dbUser);
+            CommonTestMethods.SetupUserManagerIsInRoleAsyncMock(mockedUserManager, dbUser, false);
+            CommonTestMethods.SetupUserManagerSetLockoutEndDateAsyncWithNullEndDateMock(mockedUserManager, dbUser);
+
+            var service = this.GetService(dbContext, mockedUserManager.Object);
+
+            var result = await service.ChangeStateAsync(dbUser.Id);
+
+            Assert.True(result.Succeeded);
+        }
+
+        [Fact]
+        public async Task WithUnbannedUserWithId_ShouldCallBanUser()
+        {
+            var dbContext = this.GetDbContext();
+            var dbUser = new User();
+            dbContext.Users.Add(dbUser);
+            dbContext.SaveChanges();
+
+            var mockedUserManager = this.GetMockedUserManager();
+            CommonTestMethods.SetupUserManagerFindByIdAsyncMock(mockedUserManager, dbUser);
+            CommonTestMethods.SetupUserManagerIsInRoleAsyncMock(mockedUserManager, dbUser, false);
+            CommonTestMethods.SetupUserManagerSetLockoutEndDateAsyncWithEndDateMock(mockedUserManager, dbUser);
+
+            var service = this.GetService(dbContext, mockedUserManager.Object);
+
+            var result = await service.ChangeStateAsync(dbUser.Id);
+
+            Assert.True(result.Succeeded);
         }
     }
 }

@@ -4,6 +4,7 @@ using OnlineStore.Common.Constants;
 using OnlineStore.Data;
 using OnlineStore.Models;
 using OnlineStore.Models.WebModels.Admin.ViewModels;
+using OnlineStore.Services.Tests.Common;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -35,13 +36,12 @@ namespace OnlineStore.Services.Tests.AdminTests.AdminUsersServiceTests
             var dbUserAdmin = new User();
             var dbRole = new IdentityRole()
             {
-                Name = WebConstants.AdminRole
+                Name = WebConstants.AdminRoleName
             };
-            this.AddRoleToUser(dbContext, dbUserAdmin, dbRole);
+            CommonTestMethods.AddRoleToUser(dbContext, dbUserAdmin, dbRole);
 
             var mockedUserManager = this.GetMockedUserManager();
-            mockedUserManager.Setup(um => um.IsInRoleAsync(dbUserAdmin, WebConstants.AdminRole))
-                .Returns(Task.FromResult(true));
+            CommonTestMethods.SetupUserManagerIsInRoleAsyncMock(mockedUserManager, dbUserAdmin, true);
 
             var service = this.GetService(dbContext, mockedUserManager.Object);
             var models = await service.PrepareModelForEditingAsync();
@@ -188,22 +188,6 @@ namespace OnlineStore.Services.Tests.AdminTests.AdminUsersServiceTests
             var firstModelIsBannedFlag = firstModel.IsBanned;
 
             Assert.False(firstModelIsBannedFlag);
-        }
-
-        private void AddRoleToUser(OnlineStoreDbContext dbContext, User user, IdentityRole role)
-        {
-            dbContext.Users.Add(user);
-            dbContext.Roles.Add(role);
-            dbContext.SaveChanges();
-
-            var dbUserRole = new IdentityUserRole<string>()
-            {
-                UserId = user.Id,
-                RoleId = role.Id
-            };
-            dbContext.UserRoles.Add(dbUserRole);
-
-            dbContext.SaveChanges();
         }
 
         private async Task<IEnumerable<UserViewModel>> CallPrepareModelForEditingAsyncWithUsers(
