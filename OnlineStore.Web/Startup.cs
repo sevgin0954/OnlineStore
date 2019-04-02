@@ -137,7 +137,6 @@ namespace OnlineStore.Web
             }
 
             app.UseHttpsRedirection();
-            app.UseHttpsRedirection();
             app.UseStaticFiles();
             app.UseCookiePolicy();
             app.UseSession();
